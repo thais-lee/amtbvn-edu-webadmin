@@ -1,0 +1,22 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.main-content::-webkit-scrollbar {
+  width: 0 !important;
+}
+
+.react-grid-item > .react-resizable-handle.react-resizable-handle-se {
+  bottom: 0.5rem !important;
+  right: 0.5rem !important;
+  z-index: 12;
+}
+
+.react-grid-item.react-grid-placeholder {
+  background-color: #1677ff75;
+}
