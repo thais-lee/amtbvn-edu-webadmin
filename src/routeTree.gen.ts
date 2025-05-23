@@ -16,10 +16,14 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as AppImport } from './routes/_app'
 import { Route as IndexImport } from './routes/index'
 import { Route as AuthAuthImport } from './routes/auth/_auth'
+import { Route as AppUsersImport } from './routes/_app/users'
 import { Route as AppProfileImport } from './routes/_app/profile'
 import { Route as AppDashboardImport } from './routes/_app/dashboard'
+import { Route as AppCategoriesIndexImport } from './routes/_app/categories/index'
+import { Route as AppArticlesIndexImport } from './routes/_app/articles/index'
 import { Route as AuthAuthRegisterImport } from './routes/auth/_auth/register'
 import { Route as AuthAuthLoginImport } from './routes/auth/_auth/login'
+import { Route as AppCategoriesParentIdImport } from './routes/_app/categories/$parentId'
 
 // Create Virtual Routes
 
@@ -49,6 +53,12 @@ const AuthAuthRoute = AuthAuthImport.update({
   getParentRoute: () => AuthRoute,
 } as any)
 
+const AppUsersRoute = AppUsersImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AppRoute,
+} as any)
+
 const AppProfileRoute = AppProfileImport.update({
   id: '/profile',
   path: '/profile',
@@ -58,6 +68,18 @@ const AppProfileRoute = AppProfileImport.update({
 const AppDashboardRoute = AppDashboardImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AppRoute,
+} as any)
+
+const AppCategoriesIndexRoute = AppCategoriesIndexImport.update({
+  id: '/categories/',
+  path: '/categories/',
+  getParentRoute: () => AppRoute,
+} as any)
+
+const AppArticlesIndexRoute = AppArticlesIndexImport.update({
+  id: '/articles/',
+  path: '/articles/',
   getParentRoute: () => AppRoute,
 } as any)
 
@@ -71,6 +93,12 @@ const AuthAuthLoginRoute = AuthAuthLoginImport.update({
   id: '/login',
   path: '/login',
   getParentRoute: () => AuthAuthRoute,
+} as any)
+
+const AppCategoriesParentIdRoute = AppCategoriesParentIdImport.update({
+  id: '/categories/$parentId',
+  path: '/categories/$parentId',
+  getParentRoute: () => AppRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -105,6 +133,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppProfileImport
       parentRoute: typeof AppImport
     }
+    '/_app/users': {
+      id: '/_app/users'
+      path: '/users'
+      fullPath: '/users'
+      preLoaderRoute: typeof AppUsersImport
+      parentRoute: typeof AppImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -118,6 +153,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/auth'
       preLoaderRoute: typeof AuthAuthImport
       parentRoute: typeof AuthRoute
+    }
+    '/_app/categories/$parentId': {
+      id: '/_app/categories/$parentId'
+      path: '/categories/$parentId'
+      fullPath: '/categories/$parentId'
+      preLoaderRoute: typeof AppCategoriesParentIdImport
+      parentRoute: typeof AppImport
     }
     '/auth/_auth/login': {
       id: '/auth/_auth/login'
@@ -133,6 +175,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthAuthRegisterImport
       parentRoute: typeof AuthAuthImport
     }
+    '/_app/articles/': {
+      id: '/_app/articles/'
+      path: '/articles'
+      fullPath: '/articles'
+      preLoaderRoute: typeof AppArticlesIndexImport
+      parentRoute: typeof AppImport
+    }
+    '/_app/categories/': {
+      id: '/_app/categories/'
+      path: '/categories'
+      fullPath: '/categories'
+      preLoaderRoute: typeof AppCategoriesIndexImport
+      parentRoute: typeof AppImport
+    }
   }
 }
 
@@ -141,11 +197,19 @@ declare module '@tanstack/react-router' {
 interface AppRouteChildren {
   AppDashboardRoute: typeof AppDashboardRoute
   AppProfileRoute: typeof AppProfileRoute
+  AppUsersRoute: typeof AppUsersRoute
+  AppCategoriesParentIdRoute: typeof AppCategoriesParentIdRoute
+  AppArticlesIndexRoute: typeof AppArticlesIndexRoute
+  AppCategoriesIndexRoute: typeof AppCategoriesIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppDashboardRoute: AppDashboardRoute,
   AppProfileRoute: AppProfileRoute,
+  AppUsersRoute: AppUsersRoute,
+  AppCategoriesParentIdRoute: AppCategoriesParentIdRoute,
+  AppArticlesIndexRoute: AppArticlesIndexRoute,
+  AppCategoriesIndexRoute: AppCategoriesIndexRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
@@ -179,9 +243,13 @@ export interface FileRoutesByFullPath {
   '': typeof AppRouteWithChildren
   '/dashboard': typeof AppDashboardRoute
   '/profile': typeof AppProfileRoute
+  '/users': typeof AppUsersRoute
   '/auth': typeof AuthAuthRouteWithChildren
+  '/categories/$parentId': typeof AppCategoriesParentIdRoute
   '/auth/login': typeof AuthAuthLoginRoute
   '/auth/register': typeof AuthAuthRegisterRoute
+  '/articles': typeof AppArticlesIndexRoute
+  '/categories': typeof AppCategoriesIndexRoute
 }
 
 export interface FileRoutesByTo {
@@ -189,9 +257,13 @@ export interface FileRoutesByTo {
   '': typeof AppRouteWithChildren
   '/dashboard': typeof AppDashboardRoute
   '/profile': typeof AppProfileRoute
+  '/users': typeof AppUsersRoute
   '/auth': typeof AuthAuthRouteWithChildren
+  '/categories/$parentId': typeof AppCategoriesParentIdRoute
   '/auth/login': typeof AuthAuthLoginRoute
   '/auth/register': typeof AuthAuthRegisterRoute
+  '/articles': typeof AppArticlesIndexRoute
+  '/categories': typeof AppCategoriesIndexRoute
 }
 
 export interface FileRoutesById {
@@ -200,10 +272,14 @@ export interface FileRoutesById {
   '/_app': typeof AppRouteWithChildren
   '/_app/dashboard': typeof AppDashboardRoute
   '/_app/profile': typeof AppProfileRoute
+  '/_app/users': typeof AppUsersRoute
   '/auth': typeof AuthRouteWithChildren
   '/auth/_auth': typeof AuthAuthRouteWithChildren
+  '/_app/categories/$parentId': typeof AppCategoriesParentIdRoute
   '/auth/_auth/login': typeof AuthAuthLoginRoute
   '/auth/_auth/register': typeof AuthAuthRegisterRoute
+  '/_app/articles/': typeof AppArticlesIndexRoute
+  '/_app/categories/': typeof AppCategoriesIndexRoute
 }
 
 export interface FileRouteTypes {
@@ -213,28 +289,40 @@ export interface FileRouteTypes {
     | ''
     | '/dashboard'
     | '/profile'
+    | '/users'
     | '/auth'
+    | '/categories/$parentId'
     | '/auth/login'
     | '/auth/register'
+    | '/articles'
+    | '/categories'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | ''
     | '/dashboard'
     | '/profile'
+    | '/users'
     | '/auth'
+    | '/categories/$parentId'
     | '/auth/login'
     | '/auth/register'
+    | '/articles'
+    | '/categories'
   id:
     | '__root__'
     | '/'
     | '/_app'
     | '/_app/dashboard'
     | '/_app/profile'
+    | '/_app/users'
     | '/auth'
     | '/auth/_auth'
+    | '/_app/categories/$parentId'
     | '/auth/_auth/login'
     | '/auth/_auth/register'
+    | '/_app/articles/'
+    | '/_app/categories/'
   fileRoutesById: FileRoutesById
 }
 
@@ -272,7 +360,11 @@ export const routeTree = rootRoute
       "filePath": "_app.tsx",
       "children": [
         "/_app/dashboard",
-        "/_app/profile"
+        "/_app/profile",
+        "/_app/users",
+        "/_app/categories/$parentId",
+        "/_app/articles/",
+        "/_app/categories/"
       ]
     },
     "/_app/dashboard": {
@@ -281,6 +373,10 @@ export const routeTree = rootRoute
     },
     "/_app/profile": {
       "filePath": "_app/profile.tsx",
+      "parent": "/_app"
+    },
+    "/_app/users": {
+      "filePath": "_app/users.tsx",
       "parent": "/_app"
     },
     "/auth": {
@@ -297,6 +393,10 @@ export const routeTree = rootRoute
         "/auth/_auth/register"
       ]
     },
+    "/_app/categories/$parentId": {
+      "filePath": "_app/categories/$parentId.tsx",
+      "parent": "/_app"
+    },
     "/auth/_auth/login": {
       "filePath": "auth/_auth/login.tsx",
       "parent": "/auth/_auth"
@@ -304,6 +404,14 @@ export const routeTree = rootRoute
     "/auth/_auth/register": {
       "filePath": "auth/_auth/register.tsx",
       "parent": "/auth/_auth"
+    },
+    "/_app/articles/": {
+      "filePath": "_app/articles/index.tsx",
+      "parent": "/_app"
+    },
+    "/_app/categories/": {
+      "filePath": "_app/categories/index.tsx",
+      "parent": "/_app"
     }
   }
 }

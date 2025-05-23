@@ -45,9 +45,14 @@ const MainSideNav = ({ collapsed, setCollapsed }: TMainSideNavProps) => {
         label: t('Users'),
       },
       {
-        key: '/projects',
+        key: '/categories',
         icon: <DeploymentUnitOutlined />,
-        label: t('Projects'),
+        label: t('Categories'),
+      },
+      {
+        key: '/articles',
+        icon: <DeploymentUnitOutlined />,
+        label: t('Articles'),
       },
     ],
     [t],

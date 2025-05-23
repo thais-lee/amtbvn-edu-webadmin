@@ -41,7 +41,7 @@ class HttpService {
 
   constructor() {
     this.httpWithAuth.interceptors.request.use(
-      async config => {
+      async (config) => {
         const headers = config.headers;
         const accessToken = Cookies.get(ACCESS_TOKEN_KEY);
 
@@ -51,7 +51,7 @@ class HttpService {
 
         return { ...config, headers: config.headers };
       },
-      error => {
+      (error) => {
         return Promise.reject(error);
       },
     );
@@ -83,7 +83,7 @@ class HttpService {
     );
 
     this.httpLogout.interceptors.request.use(
-      async config => {
+      async (config) => {
         const headers: any = config.headers;
         const accessToken = Cookies.get(ACCESS_TOKEN_KEY);
 
@@ -93,7 +93,7 @@ class HttpService {
 
         return { ...config, headers: config.headers };
       },
-      error => {
+      (error) => {
         return Promise.reject(error);
       },
     );
