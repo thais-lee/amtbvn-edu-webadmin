@@ -24,6 +24,7 @@ export interface TArticle {
   status: ArticleStatus;
   likeCount: number;
   viewCount: number;
+  thumbnailUrl: string;
   images: TArticleImage[];
   user: {
     id: number;

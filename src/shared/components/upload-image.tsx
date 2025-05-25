@@ -1,6 +1,6 @@
+// src/shared/components/upload-image.tsx
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import { css } from '@emotion/react';
-import { useMutation } from '@tanstack/react-query';
 import { Upload } from 'antd';
 import ImgCrop from 'antd-img-crop';
 import type { UploadChangeParam } from 'antd/es/upload';
@@ -17,48 +17,42 @@ const dummyRequest = ({ onSuccess }: any) => {
 
 type TUploadImageProps = {
   initialImageUrl?: string;
-  onUpload: (file: Blob) => Promise<string | void>;
-  onUploadSuccess?: (imageUrl?: string) => void;
+  onFileSelect?: (file: File | null) => void; // New prop for handling file selection
+  aspectRatio?: number; // Optional aspect ratio for cropping
 };
 
 const UploadImage = ({
   initialImageUrl,
-  onUpload,
-  onUploadSuccess,
+  onFileSelect,
+  aspectRatio,
 }: TUploadImageProps) => {
-  const { t } = useApp();
-
+  const { t, token } = useApp();
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState(initialImageUrl);
-
-  const mutation = useMutation({
-    mutationFn: (file: Blob) => {
-      return onUpload(file);
-    },
-    onSuccess: (data) => {
-      if (data) {
-        setImageUrl(data);
-      }
-      onUploadSuccess?.(data || undefined);
-    },
-    onMutate: () => {
-      setLoading(true);
-    },
-    onSettled: () => {
-      setLoading(false);
-    },
-  });
 
   const handleChange = useMemo<UploadProps['onChange']>(
     () => async (info: UploadChangeParam<UploadFile>) => {
       if (info.file.status === 'uploading') {
         setLoading(true);
-      } else if (info.file.status === 'done') {
-        setLoading(false);
-        await mutation.mutateAsync(info.file.originFileObj as RcFile);
+        return;
+      }
+
+      if (info.file.status === 'done') {
+        const file = info.file.originFileObj as RcFile;
+
+        // Create preview URL
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+          setImageUrl(reader.result as string);
+          setLoading(false);
+        };
+
+        // Pass the file to parent component
+        onFileSelect?.(file);
       }
     },
-    [mutation],
+    [onFileSelect],
   );
 
   const onPreview = async (file: UploadFile) => {
@@ -96,7 +90,16 @@ const UploadImage = ({
   );
 
   return (
-    <ImgCrop rotationSlider showGrid showReset resetText={t('Reset')}>
+    <ImgCrop
+      rotationSlider
+      showGrid
+      showReset
+      resetText={t('Reset')}
+      aspect={aspectRatio}
+      modalProps={{
+        destroyOnHidden: true,
+      }}
+    >
       <Upload
         name="image"
         listType="picture-card"
@@ -112,6 +115,8 @@ const UploadImage = ({
             alt="image"
             css={css`
               width: 100%;
+              height: 100%;
+              object-fit: cover;
             `}
           />
         ) : (

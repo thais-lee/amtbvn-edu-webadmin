@@ -7,6 +7,8 @@ import 'react-quill-new/dist/quill.snow.css';
 import useApp from '@/hooks/use-app';
 import articleService from '@/modules/articles/article.service';
 import categoryService from '@/modules/categories/category.service';
+import UploadAvatar from '@/modules/users/components/upload-avatar';
+import UploadImage from '@/shared/components/upload-image';
 import { ArticleStatus, ArticlesType } from '@/shared/types/article.type';
 
 import { TCreateArticleDto, TUpdateArticleDto } from '../dto/article.dto';
@@ -18,27 +20,20 @@ const QuillWrapper = ({
   value: string;
   onChange: (value: string) => void;
 }) => {
-  const [editorValue, setEditorValue] = useState(value);
   const quillRef = useRef<ReactQuill>(null);
 
   const handleChange = useCallback(
     (content: string) => {
-      setEditorValue(content);
       onChange(content);
     },
     [onChange],
   );
 
-  // Update editor value when prop changes
-  if (value !== editorValue) {
-    setEditorValue(value);
-  }
-
   return (
     <ReactQuill
       ref={quillRef}
       theme="snow"
-      value={editorValue}
+      value={value}
       onChange={handleChange}
       style={{ height: '200px', marginBottom: '50px' }}
       modules={{
@@ -74,6 +69,7 @@ const ArticleFormDrawer = ({
   const { t, antdApp } = useApp();
   const { message } = antdApp;
   const [form] = Form.useForm<TCreateArticleDto | TUpdateArticleDto>();
+  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
 
   const { data: categories } = useQuery({
     queryKey: ['/categories/all'],
@@ -99,6 +95,7 @@ const ArticleFormDrawer = ({
         categoryId: article.data.categoryId,
         type: article.data.type,
         status: article.data.status,
+        thumbnailUrl: article.data.thumbnailUrl,
       });
     }
   }, [article, form]);
@@ -107,8 +104,19 @@ const ArticleFormDrawer = ({
     values: TCreateArticleDto | TUpdateArticleDto,
   ) => {
     try {
+      const formData = new FormData();
+      Object.entries(values).forEach(([key, value]) => {
+        if (value !== undefined) {
+          formData.append(key, value as string);
+        }
+      });
+
+      if (thumbnailFile) {
+        formData.append('file', thumbnailFile);
+      }
+
       if (action === 'create') {
-        await articleService.createArticle(values as TCreateArticleDto);
+        await articleService.createArticle(formData);
         message.success(t('Created successfully'));
       } else {
         await articleService.updateArticle(id!, values as TUpdateArticleDto);
@@ -116,6 +124,7 @@ const ArticleFormDrawer = ({
       }
       setOpen(false);
       form.resetFields();
+      setThumbnailFile(null);
       refetch?.();
     } catch (error) {
       message.error(t('An error occurred'));
@@ -156,6 +165,14 @@ const ArticleFormDrawer = ({
           <Input placeholder={t('Enter title')} />
         </Form.Item>
 
+        <Form.Item name="thumbnailUrl" label={t('Image')}>
+          <UploadImage
+            onFileSelect={setThumbnailFile}
+            initialImageUrl={article?.data?.thumbnailUrl}
+            aspectRatio={16 / 9}
+          />
+        </Form.Item>
+
         <Form.Item
           name="content"
           label={t('Content')}
@@ -163,7 +180,9 @@ const ArticleFormDrawer = ({
         >
           <QuillWrapper
             value={form.getFieldValue('content') || ''}
-            onChange={(value) => form.setFieldValue('content', value)}
+            onChange={(value) => {
+              form.setFieldValue('content', value);
+            }}
           />
         </Form.Item>
 

@@ -2,7 +2,11 @@ import httpService from '@/shared/http-service';
 import { TPaginated } from '@/shared/types/paginated.type';
 
 import { TArticle } from './article.model';
-import { TCreateArticleDto, TGetArticlesDto, TUpdateArticleDto } from './dto/article.dto';
+import {
+  TCreateArticleDto,
+  TGetArticlesDto,
+  TUpdateArticleDto,
+} from './dto/article.dto';
 
 class ArticleService {
   getOne(id: number) {
@@ -20,10 +24,11 @@ class ArticleService {
     });
   }
 
-  createArticle(data: TCreateArticleDto) {
+  createArticle(data: FormData) {
     return httpService.request<TArticle>({
       url: '/api/articles',
       method: 'POST',
+      contentType: 'multipart/form-data',
       data,
     });
   }

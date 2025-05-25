@@ -1,3 +1,4 @@
+import '@ant-design/v5-patch-for-react-19';
 import 'mac-scrollbar/dist/mac-scrollbar.css';
 import ReactDOM from 'react-dom/client';
 

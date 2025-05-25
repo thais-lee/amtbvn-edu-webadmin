@@ -10,6 +10,7 @@ export interface TCreateArticleDto {
   content: string;
   categoryId: number;
   type: ArticlesType;
+  thumbnailUrl?: string;
   status?: ArticleStatus;
   images?: TArticleImageDto[];
 }
@@ -19,6 +20,7 @@ export interface TUpdateArticleDto {
   content?: string;
   categoryId?: number;
   type?: ArticlesType;
+  thumbnailUrl?: string;
   status?: ArticleStatus;
   images?: TArticleImageDto[];
 }
