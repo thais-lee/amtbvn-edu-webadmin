@@ -9,10 +9,12 @@ import { css } from '@emotion/react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import {
+  Avatar,
   Button,
   Divider,
   Dropdown,
   Flex,
+  Image,
   Input,
   Popover,
   Space,
@@ -24,6 +26,7 @@ import { useState } from 'react';
 import { useDebounce } from 'react-use';
 
 import useApp from '@/hooks/use-app';
+import { TArticle } from '@/modules/articles/article.model';
 import articleService from '@/modules/articles/article.service';
 import ArticleFormDrawer from '@/modules/articles/components/article-form-drawer';
 import ArticlePreviewDrawer from '@/modules/articles/components/article-preview-drawer';
@@ -128,6 +131,28 @@ function RouteComponent() {
       title: t('Title'),
       dataIndex: 'title',
       key: 'title',
+      // render: (_: any, record: TArticle) => (
+      //   <Space>
+      //     <img src={record.thumbnailUrl} width={50} alt={record.title} />
+      //     {`${record.title}`}
+      //   </Space>
+      // ),
+    },
+    {
+      title: t('Image'),
+      dataIndex: 'thumbnailUrl',
+      key: 'thumbnailUrl',
+      render: (thumbnailUrl: string) => (
+        <Image
+          src={thumbnailUrl || 'assets/images/bill-bg.jpeg'}
+          width={100}
+          alt="Thumbnail"
+          preview={false}
+          style={{
+            objectFit: 'cover',
+          }}
+        />
+      ),
     },
     {
       title: t('Category'),

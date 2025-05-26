@@ -1,9 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
-import { Drawer, Skeleton, Typography } from 'antd';
+import { Drawer, Image, Skeleton, Typography } from 'antd';
 
 import useApp from '@/hooks/use-app';
 import articleService from '@/modules/articles/article.service';
-import { ArticleStatus, ArticlesType } from '@/shared/types/article.type';
 
 interface ArticlePreviewDrawerProps {
   open: boolean;
@@ -42,6 +41,15 @@ const ArticlePreviewDrawer = ({
           <div>
             <Typography.Text strong>{t('Category')}: </Typography.Text>
             <Typography.Text>{article?.data.category.name}</Typography.Text>
+          </div>
+          <div>
+            <Typography.Text strong>{t('Image')}: </Typography.Text>
+            <Image
+              src={article?.data.thumbnailUrl}
+              alt="Thumbnail"
+              width={200}
+              style={{ objectFit: 'cover' }}
+            />
           </div>
           <div>
             <Typography.Text strong>{t('Type')}: </Typography.Text>

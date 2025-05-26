@@ -43,14 +43,14 @@ class ArticleService {
 
   deleteArticle(id: number) {
     return httpService.request<TArticle>({
-      url: `/api/articles/${id}`,
+      url: `/api/articles/admin/delete/${id}`,
       method: 'DELETE',
     });
   }
 
   deleteManyArticles(ids: number[]) {
     return httpService.request<TArticle>({
-      url: '/api/articles/delete-many',
+      url: '/api/articles/admin/delete-many',
       method: 'DELETE',
       data: {
         ids,
