@@ -139,7 +139,7 @@ function RouteComponent() {
       // ),
     },
     {
-      title: t('Image'),
+      title: t('Thumbnail'),
       dataIndex: 'thumbnailUrl',
       key: 'thumbnailUrl',
       render: (thumbnailUrl: string) => (

@@ -5,7 +5,7 @@ import { Upload } from 'antd';
 import ImgCrop from 'antd-img-crop';
 import type { UploadChangeParam } from 'antd/es/upload';
 import type { RcFile, UploadFile, UploadProps } from 'antd/es/upload/interface';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import useApp from '@/hooks/use-app';
 
@@ -29,6 +29,7 @@ const UploadImage = ({
   const { t, token } = useApp();
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState(initialImageUrl);
+  console.log(imageUrl);
 
   const handleChange = useMemo<UploadProps['onChange']>(
     () => async (info: UploadChangeParam<UploadFile>) => {
@@ -54,6 +55,12 @@ const UploadImage = ({
     },
     [onFileSelect],
   );
+
+  useEffect(() => {
+    if (initialImageUrl) {
+      setImageUrl(initialImageUrl);
+    }
+  }, [initialImageUrl]);
 
   const onPreview = async (file: UploadFile) => {
     let src = file.url as string;
