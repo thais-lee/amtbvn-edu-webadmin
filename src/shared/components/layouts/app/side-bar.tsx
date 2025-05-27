@@ -9,6 +9,9 @@ import { useNavigate } from '@tanstack/react-router';
 import type { MenuProps } from 'antd';
 import { Layout, Menu, Typography, theme } from 'antd';
 import { useMemo } from 'react';
+import { GrArticle } from 'react-icons/gr';
+import { MdOutlineCategory } from 'react-icons/md';
+import { SiGoogleclassroom } from 'react-icons/si';
 import { useLocation } from 'react-use';
 
 import { APP_NAME, SIDE_NAV_WIDTH } from '@/configs/constants';
@@ -46,13 +49,18 @@ const MainSideNav = ({ collapsed, setCollapsed }: TMainSideNavProps) => {
       },
       {
         key: '/categories',
-        icon: <DeploymentUnitOutlined />,
+        icon: <MdOutlineCategory />,
         label: t('Categories'),
       },
       {
         key: '/articles',
-        icon: <DeploymentUnitOutlined />,
+        icon: <GrArticle />,
         label: t('Articles'),
+      },
+      {
+        key: '/courses',
+        icon: <SiGoogleclassroom />,
+        label: t('Courses'),
       },
     ],
     [t],

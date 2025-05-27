@@ -29,7 +29,6 @@ const UploadImage = ({
   const { t, token } = useApp();
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState(initialImageUrl);
-  console.log(imageUrl);
 
   const handleChange = useMemo<UploadProps['onChange']>(
     () => async (info: UploadChangeParam<UploadFile>) => {
