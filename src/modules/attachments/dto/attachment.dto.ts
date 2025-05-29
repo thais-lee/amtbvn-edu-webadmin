@@ -1,4 +1,4 @@
-export interface TGetLibraryMaterial {
+export interface TGetAttachment {
   search?: string;
   take?: number;
   skip?: number;
@@ -7,7 +7,7 @@ export interface TGetLibraryMaterial {
   courseId?: number;
 }
 
-export interface TCreateLibraryMaterial {
+export interface TCreateAttachment {
   title: string;
   description: string;
   type: string;
@@ -15,7 +15,7 @@ export interface TCreateLibraryMaterial {
   courseId: number;
 }
 
-export interface TUpdateLibraryMaterial {
+export interface TUpdateAttachment {
   title?: string;
   description?: string;
   type?: string;

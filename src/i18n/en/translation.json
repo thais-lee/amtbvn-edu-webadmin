@@ -172,5 +172,14 @@
     "Please select course": "Please select course",
     "Select course": "Select course",
     "Please select user": "Please select user",
-    "Select user": "Select user"
+    "Select user": "Select user",
+    "Library": "Library",
+    "Create Library Material": "Create Library Material",
+    "Update Library Material": "Update Library Material",
+    "Tags": "Tags",
+    "Enter tags": "Enter tags",
+    "Files": "Files",
+    "Please upload files!": "Please upload files!",
+    "Click or drag files to this area to upload": "Click or drag files to this area to upload",
+    "Support for PDF, DOC, DOCX, MP4, MPEG, MOV, AVI, WMV, MP3, WAV, OGG, M4A": "Support for PDF, DOC, DOCX, MP4, MPEG, MOV, AVI, WMV, MP3, WAV, OGG, M4A"
 }

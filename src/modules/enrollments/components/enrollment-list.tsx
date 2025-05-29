@@ -20,22 +20,6 @@ export const EnrollmentList: React.FC = () => {
       }),
   });
 
-  // const fetchEnrollments = async () => {
-  //   try {
-  //     setLoading(true);
-  //     const data = await enrollmentService.getAllEnrollments();
-  //     setEnrollments(data);
-  //   } catch (error) {
-  //     message.error('Failed to fetch enrollments');
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   fetchEnrollments();
-  // }, []);
-
   const handleCreate = async (values: any) => {
     try {
       await enrollmentService.createEnrollment(values);

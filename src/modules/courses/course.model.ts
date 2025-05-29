@@ -1,8 +1,8 @@
 import { TActivity } from '../activities/activity.model';
+import { TAttachment } from '../attachments/attachment.model';
 import { TCategory } from '../categories/category.model';
 import { TEnrollment } from '../enrollments/enrollment.model';
 import { TLesson } from '../lessons/lesson.model';
-import { TLibraryMaterial } from '../library-material/library-material.model';
 
 export interface TCourse {
   id: number;
@@ -22,7 +22,7 @@ export interface TCourseDetail extends TCourse {
   enrollments: TEnrollment[];
   lessons: TLesson[];
   activities: TActivity[];
-  libraryMaterials: TLibraryMaterial[];
+  attachments: TAttachment[];
 }
 
 export interface TCourseCreate {

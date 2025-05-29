@@ -19,6 +19,7 @@ import { Route as AuthAuthImport } from './routes/auth/_auth'
 import { Route as AppUsersImport } from './routes/_app/users'
 import { Route as AppProfileImport } from './routes/_app/profile'
 import { Route as AppDashboardImport } from './routes/_app/dashboard'
+import { Route as AppLibraryMaterialsIndexImport } from './routes/_app/library-materials/index'
 import { Route as AppCoursesIndexImport } from './routes/_app/courses/index'
 import { Route as AppCategoriesIndexImport } from './routes/_app/categories/index'
 import { Route as AppArticlesIndexImport } from './routes/_app/articles/index'
@@ -70,6 +71,12 @@ const AppProfileRoute = AppProfileImport.update({
 const AppDashboardRoute = AppDashboardImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AppRoute,
+} as any)
+
+const AppLibraryMaterialsIndexRoute = AppLibraryMaterialsIndexImport.update({
+  id: '/library-materials/',
+  path: '/library-materials/',
   getParentRoute: () => AppRoute,
 } as any)
 
@@ -210,6 +217,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCoursesIndexImport
       parentRoute: typeof AppImport
     }
+    '/_app/library-materials/': {
+      id: '/_app/library-materials/'
+      path: '/library-materials'
+      fullPath: '/library-materials'
+      preLoaderRoute: typeof AppLibraryMaterialsIndexImport
+      parentRoute: typeof AppImport
+    }
     '/_app/courses/$courseId/': {
       id: '/_app/courses/$courseId/'
       path: '/courses/$courseId'
@@ -230,6 +244,7 @@ interface AppRouteChildren {
   AppArticlesIndexRoute: typeof AppArticlesIndexRoute
   AppCategoriesIndexRoute: typeof AppCategoriesIndexRoute
   AppCoursesIndexRoute: typeof AppCoursesIndexRoute
+  AppLibraryMaterialsIndexRoute: typeof AppLibraryMaterialsIndexRoute
   AppCoursesCourseIdIndexRoute: typeof AppCoursesCourseIdIndexRoute
 }
 
@@ -241,6 +256,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppArticlesIndexRoute: AppArticlesIndexRoute,
   AppCategoriesIndexRoute: AppCategoriesIndexRoute,
   AppCoursesIndexRoute: AppCoursesIndexRoute,
+  AppLibraryMaterialsIndexRoute: AppLibraryMaterialsIndexRoute,
   AppCoursesCourseIdIndexRoute: AppCoursesCourseIdIndexRoute,
 }
 
@@ -283,6 +299,7 @@ export interface FileRoutesByFullPath {
   '/articles': typeof AppArticlesIndexRoute
   '/categories': typeof AppCategoriesIndexRoute
   '/courses': typeof AppCoursesIndexRoute
+  '/library-materials': typeof AppLibraryMaterialsIndexRoute
   '/courses/$courseId': typeof AppCoursesCourseIdIndexRoute
 }
 
@@ -299,6 +316,7 @@ export interface FileRoutesByTo {
   '/articles': typeof AppArticlesIndexRoute
   '/categories': typeof AppCategoriesIndexRoute
   '/courses': typeof AppCoursesIndexRoute
+  '/library-materials': typeof AppLibraryMaterialsIndexRoute
   '/courses/$courseId': typeof AppCoursesCourseIdIndexRoute
 }
 
@@ -317,6 +335,7 @@ export interface FileRoutesById {
   '/_app/articles/': typeof AppArticlesIndexRoute
   '/_app/categories/': typeof AppCategoriesIndexRoute
   '/_app/courses/': typeof AppCoursesIndexRoute
+  '/_app/library-materials/': typeof AppLibraryMaterialsIndexRoute
   '/_app/courses/$courseId/': typeof AppCoursesCourseIdIndexRoute
 }
 
@@ -335,6 +354,7 @@ export interface FileRouteTypes {
     | '/articles'
     | '/categories'
     | '/courses'
+    | '/library-materials'
     | '/courses/$courseId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -350,6 +370,7 @@ export interface FileRouteTypes {
     | '/articles'
     | '/categories'
     | '/courses'
+    | '/library-materials'
     | '/courses/$courseId'
   id:
     | '__root__'
@@ -366,6 +387,7 @@ export interface FileRouteTypes {
     | '/_app/articles/'
     | '/_app/categories/'
     | '/_app/courses/'
+    | '/_app/library-materials/'
     | '/_app/courses/$courseId/'
   fileRoutesById: FileRoutesById
 }
@@ -410,6 +432,7 @@ export const routeTree = rootRoute
         "/_app/articles/",
         "/_app/categories/",
         "/_app/courses/",
+        "/_app/library-materials/",
         "/_app/courses/$courseId/"
       ]
     },
@@ -461,6 +484,10 @@ export const routeTree = rootRoute
     },
     "/_app/courses/": {
       "filePath": "_app/courses/index.tsx",
+      "parent": "/_app"
+    },
+    "/_app/library-materials/": {
+      "filePath": "_app/library-materials/index.tsx",
       "parent": "/_app"
     },
     "/_app/courses/$courseId/": {

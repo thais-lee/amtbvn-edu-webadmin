@@ -1,4 +1,4 @@
-export interface TLibraryMaterial {
+export interface TAttachment {
   id: number;
   title: string;
   description: string;

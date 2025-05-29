@@ -10,6 +10,7 @@ import type { MenuProps } from 'antd';
 import { Layout, Menu, Typography, theme } from 'antd';
 import { useMemo } from 'react';
 import { GrArticle } from 'react-icons/gr';
+import { IoLibraryOutline } from 'react-icons/io5';
 import { MdOutlineCategory } from 'react-icons/md';
 import { SiGoogleclassroom } from 'react-icons/si';
 import { useLocation } from 'react-use';
@@ -61,6 +62,11 @@ const MainSideNav = ({ collapsed, setCollapsed }: TMainSideNavProps) => {
         key: '/courses',
         icon: <SiGoogleclassroom />,
         label: t('Courses'),
+      },
+      {
+        key: '/library-materials',
+        icon: <IoLibraryOutline />,
+        label: t('Library'),
       },
     ],
     [t],
