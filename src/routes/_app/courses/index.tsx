@@ -163,7 +163,15 @@ function RouteComponent() {
         onChange={handleTableChange}
         columns={[
           { title: 'Name', dataIndex: 'name' },
-          { title: 'Description', dataIndex: 'description' },
+          {
+            title: 'Description',
+            dataIndex: 'description',
+            render(value, record, index) {
+              //shorten the value to 100 characters rich text
+              const html = value.replace(/<[^>]*>?/g, '');
+              return html.length > 100 ? html.slice(0, 100) + '...' : html;
+            },
+          },
           { title: 'Category ID', dataIndex: 'categoryId' },
           { title: 'Status', dataIndex: 'status' },
           { title: 'Created At', dataIndex: 'createdAt' },

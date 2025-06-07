@@ -185,6 +185,7 @@ function SubCategoriesView() {
         action={formMode}
         id={formId}
         refetch={refetchCurrentCategory}
+        parentCategoriesId={currentCategory?.data?.id}
       />
       <CategoryPreviewDrawer
         open={openPreviewDrawer}

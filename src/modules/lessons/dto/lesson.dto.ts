@@ -15,11 +15,19 @@ export enum LessonStatus {
 }
 
 export interface TCreateLessonDto {
-  name: string;
-  description: string;
+  title: string;
+  content: string;
+  isImportant: boolean;
+  status: LessonStatus;
+  courseId: number;
+  previousId?: number;
 }
 
 export interface TUpdateLessonDto {
-  name?: string;
-  description?: string;
+  title?: string;
+  content?: string;
+  isImportant?: boolean;
+  status?: LessonStatus;
+  courseId?: number;
+  previousId?: number;
 }

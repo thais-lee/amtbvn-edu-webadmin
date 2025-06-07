@@ -1,5 +1,11 @@
+import { useQuery } from '@tanstack/react-query';
 import { Button, Drawer, Form, Input, Select, Space } from 'antd';
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import slugify from 'slugify';
+
+import categoryService from '@/modules/categories/category.service';
+import QuillWrapper from '@/shared/components/quill-wrapper';
 
 import { TCourse, TCourseCreate, TCourseUpdate } from '../course.model';
 
@@ -19,6 +25,7 @@ const CourseFormDrawer = ({
   loading,
 }: CourseFormDrawerProps) => {
   const [form] = Form.useForm();
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (open) {
@@ -38,6 +45,27 @@ const CourseFormDrawer = ({
     }
   };
 
+  const categoriesQuery = useQuery({
+    queryKey: ['categories'],
+    queryFn: () =>
+      categoryService.getAllCategories({
+        parentId: 13,
+      }),
+  });
+
+  const handleValuesChange = (changedValues: any, allValues: any) => {
+    if (changedValues.name) {
+      const slug = slugify(changedValues.name, {
+        lower: true,
+        strict: true,
+        locale: 'vi',
+      });
+      form.setFieldsValue({
+        slug,
+      });
+    }
+  };
+
   return (
     <Drawer
       title={initialValues ? 'Edit Course' : 'Create Course'}
@@ -53,7 +81,12 @@ const CourseFormDrawer = ({
         </Space>
       }
     >
-      <Form form={form} layout="vertical" initialValues={initialValues}>
+      <Form
+        form={form}
+        layout="vertical"
+        initialValues={initialValues}
+        onValuesChange={handleValuesChange}
+      >
         <Form.Item
           name="name"
           label="Name"
@@ -62,8 +95,21 @@ const CourseFormDrawer = ({
           <Input placeholder="Enter course name" />
         </Form.Item>
 
-        <Form.Item name="description" label="Description">
-          <Input.TextArea placeholder="Enter course description" rows={4} />
+        <Form.Item
+          name="description"
+          label="Description"
+          rules={[{ required: true, message: 'Please enter description' }]}
+        >
+          <QuillWrapper
+            value={form.getFieldValue('description') || ''}
+            onChange={(value) => {
+              form.setFieldValue('description', value);
+            }}
+          />
+        </Form.Item>
+
+        <Form.Item name="slug" label={t('Slug')}>
+          <Input />
         </Form.Item>
 
         <Form.Item
@@ -73,11 +119,10 @@ const CourseFormDrawer = ({
         >
           <Select
             placeholder="Select a category"
-            options={[
-              { label: 'Category 1', value: 1 },
-              { label: 'Category 2', value: 2 },
-              { label: 'Category 3', value: 3 },
-            ]}
+            options={categoriesQuery.data?.data.items.map((item) => ({
+              label: item.name,
+              value: item.id,
+            }))}
           />
         </Form.Item>
 
@@ -89,9 +134,8 @@ const CourseFormDrawer = ({
           <Select
             placeholder="Select a status"
             options={[
-              { label: 'Draft', value: 'DRAFT' },
-              { label: 'Published', value: 'PUBLISHED' },
-              { label: 'Archived', value: 'ARCHIVED' },
+              { label: 'Public', value: 'PUBLIC' },
+              { label: 'Private', value: 'PRIVATE' },
             ]}
           />
         </Form.Item>

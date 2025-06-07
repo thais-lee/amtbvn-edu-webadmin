@@ -62,7 +62,7 @@ class LibraryMaterialsService {
 
   deleteManyLibraryMaterials = async (ids: number[]) => {
     const response = await httpService.request<TLibraryMaterial[]>({
-      url: '/api/library-materials',
+      url: '/api/library-materials/delete-many',
       method: 'DELETE',
       data: ids,
     });

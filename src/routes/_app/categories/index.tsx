@@ -297,7 +297,16 @@ function RouteComponent() {
           columns={columns as any}
           dataSource={categoryQuery.data?.data.items}
           rowKey={(record) => record.id}
-          pagination={tableParams.pagination}
+          pagination={{
+            ...tableParams.pagination,
+            total: categoryQuery.data?.data.total || 0,
+            onChange: (page, pageSize) => {
+              setTableParams({
+                ...tableParams,
+                pagination: { current: page, pageSize },
+              });
+            },
+          }}
           rowSelection={{
             type: 'checkbox',
             onChange: (selectedRowKeys) => {

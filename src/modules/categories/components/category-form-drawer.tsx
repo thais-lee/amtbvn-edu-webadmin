@@ -9,11 +9,12 @@ import {
   Skeleton,
   Space,
 } from 'antd';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import slugify from 'slugify';
 
 import UploadAvatar from '@/modules/users/components/upload-avatar';
+import SlugInput from '@/shared/components/slug-input';
 
 import categoryService from '../category.service';
 
@@ -23,6 +24,7 @@ type TCategoryFormDrawerProps = {
   action: 'create' | 'update';
   id?: number;
   refetch?: () => Promise<any>;
+  parentCategoriesId?: number;
 };
 
 const CategoryFormDrawer: React.FC<TCategoryFormDrawerProps> = ({
@@ -31,6 +33,7 @@ const CategoryFormDrawer: React.FC<TCategoryFormDrawerProps> = ({
   action,
   id = 0,
   refetch,
+  parentCategoriesId = undefined,
 }: TCategoryFormDrawerProps) => {
   const { t } = useTranslation();
 
@@ -39,18 +42,18 @@ const CategoryFormDrawer: React.FC<TCategoryFormDrawerProps> = ({
 
   const parentCategoriesQuery = useQuery({
     queryKey: ['/categories/all'],
-    queryFn: () => categoryService.getAllCategories({}),
+    queryFn: () =>
+      categoryService.getAllCategories({ parentId: parentCategoriesId }),
   });
 
   const handleValuesChange = (changedValues: any, allValues: any) => {
-    if (changedValues.name) {
-      const slug = slugify(changedValues.name, {
-        lower: true,
-        strict: true,
-        locale: 'vi',
-      });
+    if (changedValues.slug) {
       form.setFieldsValue({
-        slug,
+        name: slugify(changedValues.slug, {
+          lower: true,
+          strict: true,
+          locale: 'vi',
+        }),
       });
     }
   };
@@ -76,6 +79,7 @@ const CategoryFormDrawer: React.FC<TCategoryFormDrawerProps> = ({
       if (refetch) await refetch();
       message.success(t('Created successfully'));
       setOpen(false);
+      parentCategoriesQuery.refetch();
       form.resetFields();
     },
     onError: (error) => {
@@ -156,7 +160,12 @@ const CategoryFormDrawer: React.FC<TCategoryFormDrawerProps> = ({
           </Form.Item>
 
           <Form.Item name="slug" label={t('Slug')}>
-            <Input />
+            <SlugInput
+              autoSlugFrom={form.getFieldValue('name')}
+              parentSlugPrefix={
+                parentCategoriesId ? `${parentCategoriesId}_` : ''
+              }
+            />
           </Form.Item>
 
           <Form.Item name="parentId" label={t('Parent category')}>
