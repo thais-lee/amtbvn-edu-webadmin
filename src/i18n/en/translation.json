@@ -181,5 +181,8 @@
     "Files": "Files",
     "Please upload files!": "Please upload files!",
     "Click or drag files to this area to upload": "Click or drag files to this area to upload",
-    "Support for PDF, DOC, DOCX, MP4, MPEG, MOV, AVI, WMV, MP3, WAV, OGG, M4A": "Support for PDF, DOC, DOCX, MP4, MPEG, MOV, AVI, WMV, MP3, WAV, OGG, M4A"
+    "Support for PDF, DOC, DOCX, MP4, MPEG, MOV, AVI, WMV, MP3, WAV, OGG, M4A": "Support for PDF, DOC, DOCX, MP4, MPEG, MOV, AVI, WMV, MP3, WAV, OGG, M4A",
+    "Public": "Public",
+    "Private": "Private",
+    "Require Approval": "Require Approval"
 }

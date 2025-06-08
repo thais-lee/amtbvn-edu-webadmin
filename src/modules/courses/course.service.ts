@@ -1,16 +1,18 @@
 import httpService from '@/shared/http-service';
+import { TPaginated } from '@/shared/types/paginated.type';
 
 import {
   TCourse,
   TCourseCreate,
   TCourseDetail,
+  TCourseItem,
   TCourseQuery,
   TCourseUpdate,
 } from './course.model';
 
 class CourseService {
   getAllCourses(params?: TCourseQuery) {
-    return httpService.request<TCourse[]>({
+    return httpService.request<TPaginated<TCourseItem>>({
       url: '/api/courses/admin/all',
       method: 'GET',
       params,

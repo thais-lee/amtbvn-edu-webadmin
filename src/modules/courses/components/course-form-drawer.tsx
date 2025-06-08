@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { Button, Drawer, Form, Input, Select, Space } from 'antd';
+import { Button, Drawer, Form, Input, Select, Space, Switch } from 'antd';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import slugify from 'slugify';
@@ -138,6 +138,10 @@ const CourseFormDrawer = ({
               { label: 'Private', value: 'PRIVATE' },
             ]}
           />
+        </Form.Item>
+
+        <Form.Item name="requireApproval" label={t('Require approval')}>
+          <Switch />
         </Form.Item>
       </Form>
     </Drawer>

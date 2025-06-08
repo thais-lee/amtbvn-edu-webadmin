@@ -1,26 +1,27 @@
 import { DownOutlined } from '@ant-design/icons';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { Link, createFileRoute, useNavigate } from '@tanstack/react-router';
 import {
   Button,
   Dropdown,
-  Menu,
-  Popconfirm,
   Space,
+  Switch,
   Table,
   TablePaginationConfig,
+  Tag,
+  Typography,
   message,
 } from 'antd';
+import dayjs from 'dayjs';
 import { useState } from 'react';
 import { useDebounce } from 'react-use';
 
 import useApp from '@/hooks/use-app';
-import categoryService from '@/modules/categories/category.service';
 import CourseFormDrawer from '@/modules/courses/components/course-form-drawer';
 import {
+  ECourseStatus,
   TCourse,
   TCourseCreate,
-  TCourseQuery,
   TCourseUpdate,
 } from '@/modules/courses/course.model';
 import courseService from '@/modules/courses/course.service';
@@ -76,8 +77,8 @@ function RouteComponent() {
       tableParams.pagination,
       tableParams.filters,
     ],
-    queryFn: () =>
-      courseService.getAllCourses({
+    queryFn: async () => {
+      const data = await courseService.getAllCourses({
         take: tableParams.pagination.pageSize || 10,
         skip:
           tableParams.pagination?.current && tableParams.pagination?.pageSize
@@ -87,7 +88,10 @@ function RouteComponent() {
         ...tableParams.filters,
         sort: tableParams.sortField,
         order: tableParams.sortOrder as 'ASC' | 'DESC',
-      }),
+      });
+
+      return data.data;
+    },
   });
 
   const createMutation = useMutation({
@@ -158,25 +162,65 @@ function RouteComponent() {
       <Table
         rowKey="id"
         loading={courseQuery.isLoading}
-        dataSource={courseQuery.data?.data || []}
+        dataSource={courseQuery.data?.items || []}
         pagination={tableParams.pagination}
         onChange={handleTableChange}
         columns={[
           { title: 'Name', dataIndex: 'name' },
           {
-            title: 'Description',
+            title: t('Description'),
             dataIndex: 'description',
             render(value, record, index) {
               //shorten the value to 100 characters rich text
               const html = value.replace(/<[^>]*>?/g, '');
               return html.length > 100 ? html.slice(0, 100) + '...' : html;
             },
+            width: 400,
           },
-          { title: 'Category ID', dataIndex: 'categoryId' },
-          { title: 'Status', dataIndex: 'status' },
-          { title: 'Created At', dataIndex: 'createdAt' },
+
           {
-            title: 'Actions',
+            title: t('Category'),
+            dataIndex: 'category.name',
+            render: (_, record) => {
+              return (
+                <Typography.Text>
+                  {record.category?.name || '-'}
+                </Typography.Text>
+              );
+            },
+          },
+          {
+            title: t('Status'),
+            dataIndex: 'status',
+            render: (value) => {
+              switch (value) {
+                case ECourseStatus.PUBLIC:
+                  return <Tag color="success">{t('Public')}</Tag>;
+                case ECourseStatus.PRIVATE:
+                  return <Tag color="error">{t('Private')}</Tag>;
+              }
+            },
+          },
+          {
+            title: t('Require Approval'),
+            dataIndex: 'requireApproval',
+            render: (value) => {
+              return <Switch checked={value} disabled />;
+            },
+          },
+          {
+            title: t('Created at'),
+            dataIndex: 'createdAt',
+            render(value) {
+              return (
+                <Typography.Text>
+                  {dayjs(value).format('DD/MM/YYYY')}
+                </Typography.Text>
+              );
+            },
+          },
+          {
+            title: t('Actions'),
             render: (_, record: TCourse) => (
               <Space>
                 {/* <Button onClick={() => handleEdit(record)}>Edit</Button>

@@ -12,9 +12,15 @@ export interface TCourse {
   imageFileUrl?: string;
   bannerFileUrl?: string;
   categoryId: number;
-  status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
+  status: ECourseStatus;
+  requireApproval?: boolean;
   createdAt: string;
   updatedAt: string;
+}
+
+export enum ECourseStatus {
+  PUBLIC = 'PUBLIC',
+  PRIVATE = 'PRIVATE',
 }
 
 export interface TCourseDetail extends TCourse {
@@ -25,12 +31,23 @@ export interface TCourseDetail extends TCourse {
   attachments: TAttachment[];
 }
 
+export interface TCourseItem extends TCourse {
+  category: {
+    name: string;
+  };
+  _count: {
+    enrollments: number;
+    lessons: number;
+  };
+}
+
 export interface TCourseCreate {
   name: string;
   description?: string;
   slug?: string;
   categoryId: number;
   status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
+  requireApproval?: boolean;
 }
 
 export interface TCourseUpdate {
@@ -39,6 +56,7 @@ export interface TCourseUpdate {
   slug?: string;
   categoryId?: number;
   status?: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
+  requireApproval?: boolean;
 }
 
 export interface TCourseQuery {
@@ -47,6 +65,7 @@ export interface TCourseQuery {
   search?: string;
   status?: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
   categoryId?: number;
+  requireApproval?: boolean;
   sort?: string;
   order?: 'ASC' | 'DESC';
 }
