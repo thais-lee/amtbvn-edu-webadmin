@@ -16,7 +16,12 @@ export interface TCreateEnrollmentDto {
 }
 
 export interface TUpdateEnrollmentDto {
-  courseId?: number;
-  userId?: number;
-  status?: string;
+  status?: EEnrollmentStatus;
+}
+
+export enum EEnrollmentStatus {
+  PENDING = 'PENDING',
+  ACCEPTED = 'ACCEPTED',
+  CANCELLED = 'CANCELLED',
+  REJECTED = 'REJECTED',
 }

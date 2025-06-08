@@ -7,7 +7,6 @@ import 'react-quill-new/dist/quill.snow.css';
 import useApp from '@/hooks/use-app';
 import articleService from '@/modules/articles/article.service';
 import categoryService from '@/modules/categories/category.service';
-import UploadAvatar from '@/modules/users/components/upload-avatar';
 import UploadImage from '@/shared/components/upload-image';
 import { ArticleStatus, ArticlesType } from '@/shared/types/article.type';
 

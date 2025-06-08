@@ -5,8 +5,10 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { Avatar, Button, Drawer, Space, Table, Tabs, Typography } from 'antd';
 import React from 'react';
 
+import useApp from '@/hooks/use-app';
 import ActivityTable from '@/modules/activities/components/activity-table';
 import courseService from '@/modules/courses/course.service';
+import { EnrollmentList } from '@/modules/enrollments/components/enrollment-list';
 import LessonTable from '@/modules/lessons/components/lesson-table';
 
 const { Title } = Typography;
@@ -65,6 +67,7 @@ function RouteComponent() {
     queryFn: () => courseService.getCourseBySlug(courseId),
   });
   const navigate = useNavigate();
+  const { t } = useApp();
 
   // Drawer state
   const [drawerOpen, setDrawerOpen] = React.useState(false);
@@ -89,76 +92,6 @@ function RouteComponent() {
   };
   const closeDrawer = () => setDrawerOpen(false);
 
-  // Table columns
-  const activityColumns = [
-    { title: 'ID', dataIndex: 'id', key: 'id', width: 60 },
-    { title: 'Tiêu đề', dataIndex: 'title', key: 'title' },
-    { title: 'Loại', dataIndex: 'type', key: 'type' },
-    { title: 'Trạng thái', dataIndex: 'status', key: 'status' },
-    {
-      title: 'Ngày tạo',
-      dataIndex: 'createdAt',
-      key: 'createdAt',
-      render: (v: string) => v && new Date(v).toLocaleString(),
-    },
-    {
-      title: 'Hành động',
-      key: 'actions',
-      render: (_: any, record: any) => (
-        <Space>
-          <Button
-            size="small"
-            onClick={() => openDrawer('activity', record, 'preview')}
-          >
-            Xem
-          </Button>
-          <Button
-            size="small"
-            type="primary"
-            onClick={() => openDrawer('activity', record, 'edit')}
-          >
-            Sửa
-          </Button>
-        </Space>
-      ),
-    },
-  ];
-  const enrollmentColumns = [
-    { title: 'User ID', dataIndex: 'userId', key: 'userId', width: 80 },
-    { title: 'Trạng thái', dataIndex: 'status', key: 'status' },
-    {
-      title: 'Ngày ghi danh',
-      dataIndex: 'enrolledAt',
-      key: 'enrolledAt',
-      render: (v: string) => v && new Date(v).toLocaleString(),
-    },
-    {
-      title: '% Hoàn thành',
-      dataIndex: 'progressPercentage',
-      key: 'progressPercentage',
-    },
-    {
-      title: 'Hành động',
-      key: 'actions',
-      render: (_: any, record: any) => (
-        <Space>
-          <Button
-            size="small"
-            onClick={() => openDrawer('enrollment', record, 'preview')}
-          >
-            Xem
-          </Button>
-          <Button
-            size="small"
-            type="primary"
-            onClick={() => openDrawer('enrollment', record, 'edit')}
-          >
-            Sửa
-          </Button>
-        </Space>
-      ),
-    },
-  ];
   const attachmentColumns = [
     {
       title: 'ID',
@@ -301,24 +234,7 @@ function RouteComponent() {
             label: 'Học viên',
             children: (
               <>
-                <Button
-                  type="primary"
-                  style={{ marginBottom: 16 }}
-                  onClick={() => {
-                    setDrawerType('enrollment');
-                    setDrawerMode('edit');
-                    setDrawerItem(null);
-                    setDrawerOpen(true);
-                  }}
-                >
-                  Tạo mới
-                </Button>
-                <Table
-                  rowKey="userId"
-                  columns={enrollmentColumns}
-                  dataSource={course?.data?.enrollments || []}
-                  pagination={false}
-                />
+                <EnrollmentList courseId={course?.data?.id || 0} />
               </>
             ),
           },
@@ -342,7 +258,7 @@ function RouteComponent() {
                 <Table
                   rowKey="id"
                   columns={attachmentColumns}
-                  dataSource={course?.data?.libraryMaterials || []}
+                  dataSource={course?.data?.attachments || []}
                   pagination={false}
                 />
               </>

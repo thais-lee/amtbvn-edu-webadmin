@@ -4,7 +4,7 @@ import httpService from '@/shared/http-service';
 import { TPaginated } from '@/shared/types/paginated.type';
 
 import { TCreateUserDto } from './dto/create-user.dto';
-import { TGetUsersDto } from './dto/get-users.dto';
+import { TGetUsersDto, TSearchUsersDto } from './dto/get-users.dto';
 import { TUpdateUserDto } from './dto/update-user.dto';
 import { TUser } from './user.model';
 
@@ -17,6 +17,14 @@ class UserService {
       paramsSerializer: (params) => {
         return qs.stringify(params, { arrayFormat: 'repeat' });
       },
+    });
+  }
+
+  searchUsers(query: TSearchUsersDto) {
+    return httpService.request<TPaginated<TUser>>({
+      url: '/api/users/search',
+      method: 'GET',
+      params: query,
     });
   }
 

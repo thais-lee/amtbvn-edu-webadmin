@@ -1,6 +1,7 @@
 import httpService from '@/shared/http-service';
 import { TPaginated } from '@/shared/types/paginated.type';
 
+import { TEnrollment } from '../enrollments/enrollment.model';
 import {
   TCourse,
   TCourseCreate,
@@ -9,6 +10,7 @@ import {
   TCourseQuery,
   TCourseUpdate,
 } from './course.model';
+import { TGetCourseMemberDto } from './dto/course.dto';
 
 class CourseService {
   getAllCourses(params?: TCourseQuery) {
@@ -30,6 +32,14 @@ class CourseService {
     return httpService.request<TCourseDetail>({
       url: `/api/courses/admin/get-by-slug/${slug}`,
       method: 'GET',
+    });
+  }
+
+  getCourseEnrollments(input: TGetCourseMemberDto) {
+    return httpService.request<TPaginated<TEnrollment>>({
+      url: `/api/courses/member`,
+      method: 'GET',
+      params: input,
     });
   }
 

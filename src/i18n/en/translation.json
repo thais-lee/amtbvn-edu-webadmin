@@ -184,5 +184,18 @@
     "Support for PDF, DOC, DOCX, MP4, MPEG, MOV, AVI, WMV, MP3, WAV, OGG, M4A": "Support for PDF, DOC, DOCX, MP4, MPEG, MOV, AVI, WMV, MP3, WAV, OGG, M4A",
     "Public": "Public",
     "Private": "Private",
-    "Require Approval": "Require Approval"
+    "Require Approval": "Require Approval",
+    "Preview": "Preview",
+    "Enrolled At": "Enrolled At",
+    "Enrollment Status": "Enrollment Status",
+    "Enrollment Management": "Enrollment Management",
+    "Create Enrollment": "Create Enrollment",
+    "Edit Enrollment": "Edit Enrollment",
+    "Delete Enrollment": "Delete Enrollment",
+    "Completed At": "Completed At",
+    "Last Accessed At": "Last Accessed At",
+    "Progress": "Progress",
+    "Pending": "Pending",
+    "Accepted": "Accepted",
+    "Rejected": "Rejected"
 }

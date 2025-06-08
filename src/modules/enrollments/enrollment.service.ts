@@ -16,32 +16,35 @@ class EnrollmentService {
     });
   }
 
-  getOne(id: number) {
+  adminCreateEnrollment(data: TCreateEnrollmentDto) {
     return httpService.request<TEnrollment>({
-      url: `/api/enrollments/admin/get-by-id/${id}`,
-      method: 'GET',
-    });
-  }
-
-  createEnrollment(data: TCreateEnrollmentDto) {
-    return httpService.request<TEnrollment>({
-      url: '/api/enrollments/admin/create',
+      url: '/api/enrollments',
       method: 'POST',
       data,
     });
   }
 
-  updateEnrollment(id: number, data: TUpdateEnrollmentDto) {
+  createEnrollment(data: TCreateEnrollmentDto) {
     return httpService.request<TEnrollment>({
-      url: `/api/enrollments/admin/update/${id}`,
-      method: 'PUT',
+      url: '/api/enrollments/student',
+      method: 'POST',
       data,
     });
   }
 
-  deleteEnrollment(id: number) {
+  updateEnrollment(query: TGetEnrollmentDto, data: TUpdateEnrollmentDto) {
     return httpService.request<TEnrollment>({
-      url: `/api/enrollments/admin/delete/${id}`,
+      url: `/api/enrollments/update`,
+      method: 'PATCH',
+      params: query,
+      data,
+    });
+  }
+
+  deleteEnrollment(query: TGetEnrollmentDto) {
+    return httpService.request<TEnrollment>({
+      url: `/api/enrollments/delete`,
+      params: query,
       method: 'DELETE',
     });
   }
