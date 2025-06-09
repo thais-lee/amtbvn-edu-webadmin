@@ -2,6 +2,7 @@ import httpService from '@/shared/http-service';
 
 import {
   TCreateLessonDto,
+  TDetailLessonDto,
   TGetLessonDto,
   TUpdateLessonDto,
 } from './dto/lesson.dto';
@@ -17,25 +18,50 @@ class LessonService {
   }
 
   getOne(id: number) {
-    return httpService.request<TLesson>({
-      url: `/api/lessons/admin/get-by-id/${id}`,
+    return httpService.request<TDetailLessonDto>({
+      url: `/api/lessons/${id}`,
       method: 'GET',
     });
   }
 
-  createLesson(data: TCreateLessonDto) {
+  createLesson(
+    data: TCreateLessonDto & {
+      mediaFileIds?: number[];
+      documentFileIds?: number[];
+    },
+  ) {
     return httpService.request<TLesson>({
-      url: '/api/lessons/admin/create',
+      url: '/api/lessons',
       method: 'POST',
       data,
     });
   }
 
-  updateLesson(id: number, data: TUpdateLessonDto) {
-    return httpService.request<TGetLessonDto>({
-      url: `/api/lessons/admin/update/${id}`,
-      method: 'PUT',
+  updateLesson(
+    id: number,
+    data: TUpdateLessonDto & {
+      mediaFileIds?: number[];
+      documentFileIds?: number[];
+    },
+  ) {
+    return httpService.request<TLesson>({
+      url: `/api/lessons/${id}`,
+      method: 'PATCH',
       data,
+    });
+  }
+
+  deleteLesson(id: number) {
+    return httpService.request<void>({
+      url: `/api/lessons/${id}`,
+      method: 'DELETE',
+    });
+  }
+
+  async deleteFile(fileId: number) {
+    return httpService.request<void>({
+      url: `/api/files/${fileId}`,
+      method: 'DELETE',
     });
   }
 }

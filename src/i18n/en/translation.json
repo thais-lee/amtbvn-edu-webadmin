@@ -197,5 +197,6 @@
     "Progress": "Progress",
     "Pending": "Pending",
     "Accepted": "Accepted",
-    "Rejected": "Rejected"
+    "Rejected": "Rejected",
+    "Is important": "Is important"
 }

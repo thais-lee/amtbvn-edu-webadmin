@@ -204,19 +204,7 @@ function RouteComponent() {
             label: 'Bài học',
             children: (
               <>
-                <Button
-                  type="primary"
-                  style={{ marginBottom: 16 }}
-                  onClick={() => {
-                    setDrawerType('lesson');
-                    setDrawerMode('edit');
-                    setDrawerItem(null);
-                    setDrawerOpen(true);
-                  }}
-                >
-                  Tạo mới
-                </Button>
-                <LessonTable />
+                <LessonTable courseId={course?.data?.id || undefined} />
               </>
             ),
           },
