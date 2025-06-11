@@ -15,17 +15,66 @@ export interface TCreateActivityDto {
   description: string;
   type: string;
   status: string;
-  courseId: number;
+  courseId?: number;
   lessonId?: number;
+  dueDate?: Date;
+  maxAttempts?: number;
+  passScore?: number;
+  timeLimitMinutes?: number;
+  questions?: TCreateQuestionDto[];
+}
+
+export interface TCreateQuestionDto {
+  question: string;
+  type: string;
+  options: TCreateOptionDto[];
+}
+
+export interface TCreateOptionDto {
+  text: string;
+  isCorrect: boolean;
 }
 
 export interface TUpdateActivityDto {
   title?: string;
   description?: string;
-  type?: string;
-  status?: string;
+  type?: EActivityType;
+  status?: EActivityStatus;
+  timeLimitMinutes?: number;
   courseId?: number;
   lessonId?: number;
+  dueDate?: Date;
+  maxAttempts?: number;
+  passScore?: number;
+  questions?: TUpdateQuestionDto[];
+}
+
+export interface TUpdateQuestionDto {
+  id?: number;
+  question?: string;
+  type?: string;
+  options?: TUpdateQuestionOptionDto[];
+  points?: number;
+}
+
+export interface TActivityQuestion {
+  id?: number;
+  question: string;
+  type: string;
+  points?: number;
+  options: TActivityQuestionOption[];
+}
+
+export interface TActivityQuestionOption {
+  id?: number;
+  text: string;
+  isCorrect: boolean;
+}
+
+export interface TUpdateQuestionOptionDto {
+  id?: number;
+  text?: string;
+  isCorrect?: boolean;
 }
 
 export enum EActivityStatus {

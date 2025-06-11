@@ -1,46 +1,133 @@
-import { useQuery } from '@tanstack/react-query';
-import { Button, Space, Table } from 'antd';
-import { useEffect, useState } from 'react';
+import {
+  DeleteOutlined,
+  DownOutlined,
+  EditOutlined,
+  EyeOutlined,
+  FilterOutlined,
+} from '@ant-design/icons';
+import { css } from '@emotion/react';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import {
+  Button,
+  Dropdown,
+  Flex,
+  Form,
+  Input,
+  Popover,
+  Space,
+  Table,
+} from 'antd';
+import modal from 'antd/es/modal';
+import dayjs from 'dayjs';
+import { useState } from 'react';
+
+import useApp from '@/hooks/use-app';
 
 import activityService from '../activity.service';
 import ActivityFormDrawer from './activity-drawer-form';
 
 interface ActivityTableProps {
-  courseId?: number;
+  courseId: number;
 }
 
 export default function ActivityTable({ courseId }: ActivityTableProps) {
-  const [open, setOpen] = useState(false);
-  const [refetch, setRefetch] = useState(false);
+  const [formMode, setFormMode] = useState<'create' | 'update'>('create');
+  const [openFormDrawer, setOpenFormDrawer] = useState(false);
+  const [formId, setFormId] = useState<number>(0);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
+  const [search, setSearch] = useState('');
+  const [form] = Form.useForm();
 
-  const { data: activities } = useQuery({
+  const handleDeleteMutation = useMutation({
+    mutationFn: (id: number) => activityService.deleteActivity(id),
+    onSuccess: () => {
+      refetchActivities();
+    },
+  });
+
+  const { t, token } = useApp();
+
+  const { data: activities, refetch: refetchActivities } = useQuery({
     queryKey: ['activities'],
-    queryFn: () =>
-      activityService.getAllActivities({
+    queryFn: async () => {
+      const response = await activityService.getAllActivities({
         courseId,
         take: 100,
         skip: 0,
-      }),
+      });
+      return response.data.items;
+    },
+    enabled: !!courseId,
   });
-
-  useEffect(() => {
-    if (refetch) {
-      setRefetch(false);
-    }
-  }, [refetch]);
 
   return (
     <div>
+      <Flex vertical gap={token.size}>
+        <Flex justify="space-between">
+          <Space direction="horizontal" style={{ width: '100%' }}>
+            <Button
+              type="primary"
+              onClick={() => {
+                setFormMode('create');
+                form.resetFields();
+                setOpenFormDrawer(true);
+              }}
+            >
+              {t('Create')}
+            </Button>
+
+            <Button
+              danger
+              type="dashed"
+              disabled={selectedRowKeys.length === 0}
+              onClick={() => {
+                modal.confirm({
+                  title: t('Delete confirmation'),
+                  content: t(
+                    'Are you sure you want to delete the selected items?',
+                  ),
+                  okText: t('Yes'),
+                  cancelText: t('No'),
+                  onOk: async () => {
+                    handleDeleteMutation.mutate(selectedRowKeys[0] as number);
+                  },
+                });
+              }}
+            >
+              {t('Delete selected')}
+            </Button>
+          </Space>
+
+          <div>
+            <Space direction="horizontal" style={{ width: '100%' }}>
+              <Popover
+                placement="bottomRight"
+                trigger="click"
+                title={t('Filter')}
+                content={<></>}
+              >
+                <Button icon={<FilterOutlined />}>{t('Filter')}</Button>
+              </Popover>
+
+              <Input.Search
+                placeholder={t('Search')}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </Space>
+          </div>
+        </Flex>
+      </Flex>
       <Table
-        dataSource={activities?.data || []}
+        dataSource={activities || []}
         columns={[
           {
-            title: 'Title',
+            title: t('Title'),
             dataIndex: 'title',
             key: 'title',
           },
           {
-            title: 'Description',
+            title: t('Description'),
             dataIndex: 'description',
             key: 'description',
             render: (_, record) =>
@@ -49,44 +136,102 @@ export default function ActivityTable({ courseId }: ActivityTableProps) {
                 : record.description,
           },
           {
-            title: 'Type',
+            title: t('Type'),
             dataIndex: 'type',
             key: 'type',
           },
           {
-            title: 'Status',
+            title: t('Status'),
             dataIndex: 'status',
             key: 'status',
           },
           {
-            title: 'Created At',
+            title: t('Created at'),
             dataIndex: 'createdAt',
             key: 'createdAt',
+            render: (value: string) =>
+              dayjs(value).format('DD/MM/YYYY - HH:mm:ss'),
           },
           {
-            title: 'Updated At',
+            title: t('Updated at'),
             dataIndex: 'updatedAt',
             key: 'updatedAt',
+            render: (value: string) =>
+              dayjs(value).format('DD/MM/YYYY - HH:mm:ss'),
           },
           {
-            title: 'Actions',
+            title: t('Actions'),
             dataIndex: 'actions',
             key: 'actions',
             render: (_, record) => (
-              <Space>
-                <Button type="primary" onClick={() => setOpen(true)}>
-                  Edit
+              <Dropdown
+                menu={{
+                  items: [
+                    {
+                      label: t('View'),
+                      key: 'view',
+                      icon: <EyeOutlined />,
+                      onClick: () => {
+                        setFormMode('update');
+                        setFormId(record.id);
+                        setOpenFormDrawer(true);
+                      },
+                    },
+                    {
+                      label: t('Edit'),
+                      key: 'edit',
+                      icon: <EditOutlined />,
+                      onClick: () => {
+                        setFormMode('update');
+                        setFormId(record.id);
+                        setOpenFormDrawer(true);
+                      },
+                    },
+                    {
+                      label: t('Delete'),
+                      key: 'delete',
+                      icon: <DeleteOutlined />,
+                      danger: true,
+                      onClick: () => {
+                        modal.confirm({
+                          title: t('Delete confirmation'),
+                          content: t(
+                            'Are you sure you want to delete this item?',
+                          ),
+                          okText: t('Yes'),
+                          cancelText: t('No'),
+                          onOk: async () => {
+                            await handleDeleteMutation.mutateAsync(+record.id);
+                          },
+                        });
+                      },
+                    },
+                  ],
+                }}
+              >
+                <Button>
+                  <Space>
+                    {t('Actions')}
+                    <DownOutlined />
+                  </Space>
                 </Button>
-              </Space>
+              </Dropdown>
             ),
           },
         ]}
+        css={css`
+          background: ${token.colorBgContainer};
+          border-radius: ${token.borderRadius}px;
+          padding: ${token.padding}px;
+        `}
       />
       <ActivityFormDrawer
-        open={open}
-        setOpen={setOpen}
-        action="create"
-        refetch={() => setRefetch(!refetch)}
+        open={openFormDrawer}
+        setOpen={setOpenFormDrawer}
+        action={formMode}
+        refetch={refetchActivities}
+        courseId={courseId}
+        id={formId}
       />
     </div>
   );

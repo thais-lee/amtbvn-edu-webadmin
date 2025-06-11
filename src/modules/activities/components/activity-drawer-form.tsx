@@ -1,9 +1,26 @@
-import { useQuery } from '@tanstack/react-query';
-import { Button, Drawer, Form, Input, Select, Space } from 'antd';
+import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query';
+import {
+  Button,
+  Card,
+  Checkbox,
+  DatePicker,
+  Divider,
+  Drawer,
+  Form,
+  Input,
+  InputNumber,
+  Radio,
+  Select,
+  Space,
+  TimePicker,
+} from 'antd';
 import dayjs from 'dayjs';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import useApp from '@/hooks/use-app';
+import { TLesson } from '@/modules/lessons/lesson.model';
+import lessonService from '@/modules/lessons/lesson.service';
 
 import activityService from '../activity.service';
 import { TCreateActivityDto, TUpdateActivityDto } from '../dto/activity.dto';
@@ -14,6 +31,7 @@ interface ActivityFormDrawerProps {
   action: 'create' | 'update';
   id?: number;
   refetch?: () => void;
+  courseId: number;
 }
 
 const ActivityFormDrawer = ({
@@ -22,10 +40,36 @@ const ActivityFormDrawer = ({
   action,
   id,
   refetch,
+  courseId,
 }: ActivityFormDrawerProps) => {
   const { t, antdApp } = useApp();
   const { message } = antdApp;
   const [form] = Form.useForm<TCreateActivityDto | TUpdateActivityDto>();
+  const [activityScope, setActivityScope] = useState<'COURSE' | 'LESSON'>(
+    'COURSE',
+  );
+  const [lessonOptions, setLessonOptions] = useState<
+    { label: string; value: number }[]
+  >([]);
+
+  const { isFetching } = useQuery({
+    queryKey: ['lesson-search', courseId],
+    queryFn: async () => {
+      const response = await lessonService.getAllLessons({
+        courseId,
+      });
+      setLessonOptions(
+        (response.data ?? []).map((lesson: TLesson) => ({
+          label: lesson.title,
+          value: lesson.id,
+        })),
+      );
+      return response;
+    },
+    enabled: activityScope === 'LESSON',
+    placeholderData: keepPreviousData,
+    staleTime: 0,
+  });
 
   const { data: activity } = useQuery({
     queryKey: ['activities', id],
@@ -40,27 +84,105 @@ const ActivityFormDrawer = ({
         description: activity.data.description,
         type: activity.data.type,
         courseId: activity.data.courseId,
+        status: activity.data.status,
+        timeLimitMinutes: activity.data.timeLimitMinutes,
+        dueDate: activity.data.dueDate
+          ? dayjs(activity.data.dueDate)
+          : undefined,
+        maxAttempts: activity.data.maxAttempts,
+        passScore: activity.data.passScore,
+        lessonId: activity.data.lessonId ?? undefined,
+        questions: activity.data.questions,
+      });
+      setActivityScope(activity.data.lessonId ? 'LESSON' : 'COURSE');
+    }
+  }, [activity, form, open]);
+
+  useEffect(() => {
+    if (activityScope === 'COURSE') {
+      form.setFieldsValue({ courseId });
+    }
+    if (activityScope === 'LESSON') {
+      form.setFieldsValue({ courseId: undefined });
+    }
+  }, [activityScope, courseId, form]);
+
+  useEffect(() => {
+    if (open && action === 'create') {
+      form.resetFields();
+      setActivityScope('COURSE');
+      form.setFieldsValue({
+        questions: [],
+        courseId,
+        lessonId: undefined,
+        title: '',
+        description: '',
+        type: 'QUIZ',
+        status: 'DRAFT',
+        timeLimitMinutes: 0,
       });
     }
-  }, [activity, form]);
+  }, [open, action, form, courseId]);
+
+  const createMutation = useMutation({
+    mutationFn: (data: FormData) => activityService.createActivity(data),
+    onSuccess: () => {
+      message.success(t('Created successfully'));
+      setOpen(false);
+      form.resetFields();
+      refetch?.();
+    },
+    onError: () => {
+      message.error(t('An error occurred'));
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: (data: FormData) => activityService.updateActivity(id!, data),
+    onSuccess: async () => {
+      message.success(t('Updated successfully'));
+      setOpen(false);
+      form.resetFields();
+      refetch?.();
+    },
+    onError: () => {
+      message.error(t('An error occurred'));
+    },
+  });
 
   const handleSubmit = async (
     values: TCreateActivityDto | TUpdateActivityDto,
   ) => {
-    try {
-      if (action === 'create') {
-        await activityService.createActivity(values as TCreateActivityDto);
-        message.success(t('Created successfully'));
-      } else {
-        await activityService.updateActivity(id!, values as TUpdateActivityDto);
-        message.success(t('Updated successfully'));
+    const questionsWithIsCorrect = (values.questions ?? []).map((q) => ({
+      ...q,
+      options: (q.options ?? []).map((opt) => ({
+        ...opt,
+        isCorrect: typeof opt.isCorrect === 'boolean' ? opt.isCorrect : false,
+      })),
+    }));
+
+    const formData = new FormData();
+    Object.entries({
+      ...values,
+      questions: questionsWithIsCorrect,
+    }).forEach(([key, value]) => {
+      if (value !== undefined) {
+        if (key === 'questions') {
+          formData.append(key, JSON.stringify(value));
+        } else {
+          formData.append(key, value as string);
+        }
       }
-      setOpen(false);
-      form.resetFields();
-      refetch?.();
-    } catch (error) {
-      message.error(t('An error occurred'));
+    });
+
+    if (action === 'create') {
+      createMutation.mutate(formData);
+    } else {
+      updateMutation.mutate(formData);
     }
+    // setOpen(false);
+    // form.resetFields();
+    // refetch?.();
   };
 
   return (
@@ -81,6 +203,36 @@ const ActivityFormDrawer = ({
       }
     >
       <Form form={form} layout="vertical" onFinish={handleSubmit}>
+        <Form.Item label={t('Activity for')}>
+          <Radio.Group
+            value={activityScope}
+            onChange={(e) => setActivityScope(e.target.value)}
+            options={[
+              { label: t('Course'), value: 'COURSE' },
+              { label: t('Lesson'), value: 'LESSON' },
+            ]}
+            optionType="button"
+            buttonStyle="solid"
+          />
+        </Form.Item>
+        {activityScope === 'COURSE' && (
+          <Form.Item name="courseId" initialValue={courseId} hidden>
+            <Input type="hidden" />
+          </Form.Item>
+        )}
+        {activityScope === 'LESSON' && (
+          <Form.Item
+            name="lessonId"
+            label={t('Lesson')}
+            rules={[{ required: true, message: t('Please select a lesson') }]}
+          >
+            <Select
+              filterOption={false}
+              notFoundContent={isFetching ? <span>Loading...</span> : null}
+              options={lessonOptions}
+            />
+          </Form.Item>
+        )}
         <Form.Item
           name="title"
           label={t('Title')}
@@ -126,6 +278,204 @@ const ActivityFormDrawer = ({
             ]}
           />
         </Form.Item>
+        <Space
+          style={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'space-between',
+          }}
+        >
+          <Form.Item
+            name="timeLimitMinutes"
+            label={t('Time limit (minutes)')}
+            rules={[{ required: true, message: t('Please enter time limit') }]}
+          >
+            <InputNumber placeholder={t('Enter time limit')} />
+          </Form.Item>
+
+          <Form.Item
+            name="maxAttempts"
+            label={t('Max attempts')}
+            rules={[
+              { required: true, message: t('Please enter max attempts') },
+            ]}
+          >
+            <InputNumber placeholder={t('Enter max attempts')} />
+          </Form.Item>
+          <Form.Item
+            name="passScore"
+            label={t('Pass score')}
+            rules={[{ required: true, message: t('Please enter pass score') }]}
+          >
+            <InputNumber placeholder={t('Enter pass score')} />
+          </Form.Item>
+        </Space>
+        <Form.Item
+          name="dueDate"
+          label={t('Due date')}
+          rules={[{ required: true, message: t('Please select due date') }]}
+        >
+          <Space>
+            <DatePicker
+              mode="date"
+              format="HH:mm DD/MM/YYYY"
+              placeholder={t('Select due date')}
+              onChange={(date) => {
+                if (date) {
+                  form.setFieldsValue({
+                    dueDate: date.format('YYYY-MM-DD HH:mm'),
+                  });
+                }
+              }}
+            />
+            <TimePicker
+              format="HH:mm"
+              placeholder={t('Select time')}
+              onChange={(time) => {
+                if (time) {
+                  form.setFieldsValue({
+                    dueDate: time.format('YYYY-MM-DD HH:mm'),
+                  });
+                }
+              }}
+            />
+          </Space>
+        </Form.Item>
+        <Form.List name="questions">
+          {(fields, { add, remove }) => (
+            <>
+              <Divider orientation="left">{t('Questions')}</Divider>
+              {fields.map(({ key, name, ...restField }) => (
+                <Card
+                  key={key}
+                  style={{ marginBottom: 16, background: '#fafafa' }}
+                  size="small"
+                  title={`${t('Question')} ${name + 1}`}
+                  extra={
+                    <MinusCircleOutlined
+                      onClick={() => remove(name)}
+                      style={{ color: 'red' }}
+                    />
+                  }
+                >
+                  <Form.Item
+                    {...restField}
+                    name={[name, 'question']}
+                    label={t('Question')}
+                    rules={[
+                      { required: true, message: t('Please enter question') },
+                    ]}
+                  >
+                    <Input.TextArea
+                      placeholder={t('Enter question')}
+                      autoSize={{ minRows: 2, maxRows: 6 }}
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    {...restField}
+                    name={[name, 'type']}
+                    label={t('Type')}
+                    rules={[
+                      { required: true, message: t('Please select type') },
+                    ]}
+                  >
+                    <Select
+                      placeholder={t('Select type')}
+                      options={[
+                        {
+                          label: t('Multiple Choice'),
+                          value: 'MULTIPLE_CHOICE',
+                        },
+                        { label: t('True/False'), value: 'TRUE_FALSE' },
+                        { label: t('Short Answer'), value: 'SHORT_ANSWER' },
+                        { label: t('Essay'), value: 'ESSAY' },
+                      ]}
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    name={[name, 'points']}
+                    label={t('Points')}
+                    rules={[
+                      { required: true, message: t('Please enter points') },
+                    ]}
+                  >
+                    <InputNumber placeholder={t('Enter points')} />
+                  </Form.Item>
+                  {/* Options for Multiple Choice */}
+                  <Form.List name={[name, 'options']}>
+                    {(
+                      optionFields,
+                      { add: addOption, remove: removeOption },
+                    ) => (
+                      <>
+                        <Divider orientation="left" style={{ fontSize: 13 }}>
+                          {t('Options')}
+                        </Divider>
+                        {optionFields.map(
+                          ({
+                            key: optionKey,
+                            name: optionName,
+                            ...optionRestField
+                          }) => (
+                            <Space
+                              key={optionKey}
+                              align="baseline"
+                              style={{ display: 'flex', marginBottom: 8 }}
+                            >
+                              <Form.Item
+                                {...optionRestField}
+                                name={[optionName, 'text']}
+                                rules={[
+                                  {
+                                    required: true,
+                                    message: t('Option text required'),
+                                  },
+                                ]}
+                              >
+                                <Input placeholder={t('Option text')} />
+                              </Form.Item>
+                              <Form.Item
+                                {...optionRestField}
+                                name={[optionName, 'isCorrect']}
+                                valuePropName="checked"
+                                style={{ margin: 0 }}
+                              >
+                                <Checkbox>{t('Correct')}</Checkbox>
+                              </Form.Item>
+                              <MinusCircleOutlined
+                                onClick={() => removeOption(optionName)}
+                              />
+                            </Space>
+                          ),
+                        )}
+                        <Form.Item>
+                          <Button
+                            type="dashed"
+                            onClick={() => addOption()}
+                            icon={<PlusOutlined />}
+                            size="small"
+                          >
+                            {t('Add Option')}
+                          </Button>
+                        </Form.Item>
+                      </>
+                    )}
+                  </Form.List>
+                </Card>
+              ))}
+              <Form.Item>
+                <Button
+                  type="dashed"
+                  onClick={() => add()}
+                  icon={<PlusOutlined />}
+                  block
+                >
+                  {t('Add Question')}
+                </Button>
+              </Form.Item>
+            </>
+          )}
+        </Form.List>
       </Form>
     </Drawer>
   );
