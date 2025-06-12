@@ -197,7 +197,13 @@ function RouteComponent() {
           {
             key: 'overview',
             label: 'Tổng quan',
-            children: <div>Tổng quan sẽ hiển thị ở đây.</div>,
+            children: (
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: course?.data?.description ?? '',
+                }}
+              />
+            ),
           },
           {
             key: 'lessons',
@@ -213,7 +219,7 @@ function RouteComponent() {
             label: 'Hoạt động',
             children: (
               <>
-                <ActivityTable courseId={course?.data?.id || undefined} />
+                <ActivityTable courseId={course?.data?.id ?? 0} />
               </>
             ),
           },

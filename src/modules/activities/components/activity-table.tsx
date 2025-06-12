@@ -16,6 +16,7 @@ import {
   Popover,
   Space,
   Table,
+  message,
 } from 'antd';
 import modal from 'antd/es/modal';
 import dayjs from 'dayjs';
@@ -41,6 +42,7 @@ export default function ActivityTable({ courseId }: ActivityTableProps) {
   const handleDeleteMutation = useMutation({
     mutationFn: (id: number) => activityService.deleteActivity(id),
     onSuccess: () => {
+      message.success(t('Deleted successfully'));
       refetchActivities();
     },
   });
