@@ -3,7 +3,7 @@ import styled from '@emotion/styled';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { Avatar, Button, Drawer, Space, Table, Tabs, Typography } from 'antd';
-import React from 'react';
+import React, { useState } from 'react';
 
 import useApp from '@/hooks/use-app';
 import ActivityTable from '@/modules/activities/components/activity-table';
@@ -79,6 +79,10 @@ function RouteComponent() {
   >(null);
   const [drawerItem, setDrawerItem] = React.useState<any>(null);
 
+  // Grading state
+  const [gradingDrawerOpen, setGradingDrawerOpen] = useState(false);
+  const [gradingActivity, setGradingActivity] = useState<any>(null);
+
   // Handlers
   const openDrawer = (
     type: typeof drawerType,
@@ -91,6 +95,15 @@ function RouteComponent() {
     setDrawerOpen(true);
   };
   const closeDrawer = () => setDrawerOpen(false);
+
+  const handleOpenGrading = (activity: any) => {
+    setGradingActivity(activity);
+    setGradingDrawerOpen(true);
+  };
+  const handleCloseGrading = () => {
+    setGradingDrawerOpen(false);
+    setGradingActivity(null);
+  };
 
   const attachmentColumns = [
     {
@@ -219,7 +232,10 @@ function RouteComponent() {
             label: 'Hoạt động',
             children: (
               <>
-                <ActivityTable courseId={course?.data?.id ?? 0} />
+                <ActivityTable
+                  courseId={course?.data?.id ?? 0}
+                  onGrade={handleOpenGrading}
+                />
               </>
             ),
           },

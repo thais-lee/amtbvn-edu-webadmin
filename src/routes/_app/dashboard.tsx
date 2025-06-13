@@ -13,12 +13,26 @@ export const Route = createFileRoute('/_app/dashboard')({
 function RouteComponent() {
   const { t, token } = useApp();
 
+  // Mock data for dashboard
+  const mockStats = {
+    userCount: 4567,
+    courseCount: 123,
+    lessonCount: 789,
+    articleCount: 56,
+  };
+
   const dashboardQuery = useQuery({
     queryKey: ['/dashboard'],
     queryFn: () => {},
   });
 
   const colors = [token.blue, token.green, token.orange, token.red];
+  const statKeys = [
+    { label: 'Số lượng người dùng', value: mockStats.userCount },
+    { label: 'Số lượng khóa học', value: mockStats.courseCount },
+    { label: 'Số lượng bài học', value: mockStats.lessonCount },
+    { label: 'Số lượng bài viết', value: mockStats.articleCount },
+  ];
 
   return (
     <Flex vertical>
@@ -27,45 +41,43 @@ function RouteComponent() {
       <Divider />
 
       <Row gutter={[token.size, token.size]}>
-        {['usersCount', 'projectsCount', 'gatewaysCount', 'devicesCount'].map(
-          (key: any, index) => (
-            <Col key={key} span={6}>
-              {dashboardQuery.isLoading ? (
-                <Skeleton active />
-              ) : (
-                <Flex
-                  vertical
+        {statKeys.map((stat, index) => (
+          <Col key={stat.label} span={6}>
+            {dashboardQuery.isLoading ? (
+              <Skeleton active />
+            ) : (
+              <Flex
+                vertical
+                css={css`
+                  padding: ${token.padding}px;
+                  padding-top: ${token.paddingXS}px;
+                  background-color: ${colors[index]}25;
+                  border-radius: ${token.borderRadius}px;
+                `}
+              >
+                <Typography.Text
+                  strong
                   css={css`
-                    padding: ${token.padding}px;
-                    padding-top: ${token.paddingXS}px;
-                    background-color: ${colors[index]}25;
-                    border-radius: ${token.borderRadius}px;
+                    color: ${colors[index]};
+                    font-size: ${token.fontSizeHeading5}px;
                   `}
                 >
-                  <Typography.Text
-                    strong
-                    css={css`
-                      color: ${colors[index]};
-                      font-size: ${token.fontSizeHeading5}px;
-                    `}
-                  >
-                    {t(key)}
-                  </Typography.Text>
+                  {t(stat.label)}
+                </Typography.Text>
 
-                  <Typography.Text
-                    strong
-                    css={css`
-                      font-size: ${token.fontSizeHeading3}px;
-                      text-align: center;
-                    `}
-                  >
-                    {'123' as any}
-                  </Typography.Text>
-                </Flex>
-              )}
-            </Col>
-          ),
-        )}
+                <Typography.Text
+                  strong
+                  css={css`
+                    font-size: ${token.fontSizeHeading3}px;
+                    text-align: center;
+                  `}
+                >
+                  {stat.value.toLocaleString()}
+                </Typography.Text>
+              </Flex>
+            )}
+          </Col>
+        ))}
       </Row>
     </Flex>
   );

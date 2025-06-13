@@ -23,7 +23,11 @@ import { TLesson } from '@/modules/lessons/lesson.model';
 import lessonService from '@/modules/lessons/lesson.service';
 
 import activityService from '../activity.service';
-import { TCreateActivityDto, TUpdateActivityDto } from '../dto/activity.dto';
+import {
+  EActivityQuestionType,
+  TCreateActivityDto,
+  TUpdateActivityDto,
+} from '../dto/activity.dto';
 
 interface ActivityFormDrawerProps {
   open: boolean;
@@ -184,6 +188,12 @@ const ActivityFormDrawer = ({
     // form.resetFields();
     // refetch?.();
   };
+
+  // Helper: TRUE_FALSE options
+  const TRUE_FALSE_OPTIONS = [
+    { text: 'Đúng', isCorrect: false },
+    { text: 'Sai', isCorrect: false },
+  ];
 
   return (
     <Drawer
@@ -384,12 +394,35 @@ const ActivityFormDrawer = ({
                       options={[
                         {
                           label: t('Multiple Choice'),
-                          value: 'MULTIPLE_CHOICE',
+                          value: EActivityQuestionType.MULTIPLE_CHOICE,
                         },
-                        { label: t('True/False'), value: 'TRUE_FALSE' },
-                        { label: t('Short Answer'), value: 'SHORT_ANSWER' },
-                        { label: t('Essay'), value: 'ESSAY' },
+                        {
+                          label: t('True/False'),
+                          value: EActivityQuestionType.TRUE_FALSE,
+                        },
+                        {
+                          label: t('Short Answer'),
+                          value: EActivityQuestionType.SHORT_ANSWER,
+                        },
+                        {
+                          label: t('Essay'),
+                          value: EActivityQuestionType.ESSAY,
+                        },
                       ]}
+                      onChange={(val) => {
+                        // Nếu chọn TRUE_FALSE thì set options mặc định
+                        if (val === EActivityQuestionType.TRUE_FALSE) {
+                          const questions =
+                            form.getFieldValue('questions') || [];
+                          questions[name] = {
+                            ...questions[name],
+                            options: TRUE_FALSE_OPTIONS.map((opt) => ({
+                              ...opt,
+                            })),
+                          };
+                          form.setFieldsValue({ questions });
+                        }
+                      }}
                     />
                   </Form.Item>
                   <Form.Item
@@ -401,66 +434,135 @@ const ActivityFormDrawer = ({
                   >
                     <InputNumber placeholder={t('Enter points')} />
                   </Form.Item>
-                  {/* Options for Multiple Choice */}
-                  <Form.List name={[name, 'options']}>
-                    {(
-                      optionFields,
-                      { add: addOption, remove: removeOption },
-                    ) => (
-                      <>
-                        <Divider orientation="left" style={{ fontSize: 13 }}>
-                          {t('Options')}
-                        </Divider>
-                        {optionFields.map(
-                          ({
-                            key: optionKey,
-                            name: optionName,
-                            ...optionRestField
-                          }) => (
-                            <Space
-                              key={optionKey}
-                              align="baseline"
-                              style={{ display: 'flex', marginBottom: 8 }}
-                            >
-                              <Form.Item
-                                {...optionRestField}
-                                name={[optionName, 'text']}
-                                rules={[
-                                  {
-                                    required: true,
-                                    message: t('Option text required'),
-                                  },
-                                ]}
-                              >
-                                <Input placeholder={t('Option text')} />
-                              </Form.Item>
-                              <Form.Item
-                                {...optionRestField}
-                                name={[optionName, 'isCorrect']}
-                                valuePropName="checked"
-                                style={{ margin: 0 }}
-                              >
-                                <Checkbox>{t('Correct')}</Checkbox>
-                              </Form.Item>
-                              <MinusCircleOutlined
-                                onClick={() => removeOption(optionName)}
-                              />
-                            </Space>
-                          ),
-                        )}
-                        <Form.Item>
-                          <Button
-                            type="dashed"
-                            onClick={() => addOption()}
-                            icon={<PlusOutlined />}
-                            size="small"
-                          >
-                            {t('Add Option')}
-                          </Button>
-                        </Form.Item>
-                      </>
-                    )}
-                  </Form.List>
+                  {/* Options cho TRUE_FALSE */}
+                  <Form.Item shouldUpdate>
+                    {() => {
+                      const type = form.getFieldValue([
+                        'questions',
+                        name,
+                        'type',
+                      ]);
+                      if (type === EActivityQuestionType.TRUE_FALSE) {
+                        return (
+                          <Form.List name={[name, 'options']}>
+                            {(optionFields) => (
+                              <>
+                                <Divider
+                                  orientation="left"
+                                  style={{ fontSize: 13 }}
+                                >
+                                  {t('Options')}
+                                </Divider>
+                                {optionFields.map(
+                                  ({
+                                    key: optionKey,
+                                    name: optionName,
+                                    ...optionRestField
+                                  }) => (
+                                    <Space
+                                      key={optionKey}
+                                      align="baseline"
+                                      style={{
+                                        display: 'flex',
+                                        marginBottom: 8,
+                                      }}
+                                    >
+                                      <Form.Item
+                                        {...optionRestField}
+                                        name={[optionName, 'text']}
+                                        style={{ marginRight: 8, minWidth: 60 }}
+                                      >
+                                        <Input disabled />
+                                      </Form.Item>
+                                      <Form.Item
+                                        {...optionRestField}
+                                        name={[optionName, 'isCorrect']}
+                                        valuePropName="checked"
+                                        style={{ margin: 0 }}
+                                      >
+                                        <Checkbox>{t('Correct')}</Checkbox>
+                                      </Form.Item>
+                                    </Space>
+                                  ),
+                                )}
+                              </>
+                            )}
+                          </Form.List>
+                        );
+                      }
+                      // Nếu là MULTIPLE_CHOICE thì render như cũ
+                      if (type === EActivityQuestionType.MULTIPLE_CHOICE) {
+                        return (
+                          <Form.List name={[name, 'options']}>
+                            {(
+                              optionFields,
+                              { add: addOption, remove: removeOption },
+                            ) => (
+                              <>
+                                <Divider
+                                  orientation="left"
+                                  style={{ fontSize: 13 }}
+                                >
+                                  {t('Options')}
+                                </Divider>
+                                {optionFields.map(
+                                  ({
+                                    key: optionKey,
+                                    name: optionName,
+                                    ...optionRestField
+                                  }) => (
+                                    <Space
+                                      key={optionKey}
+                                      align="baseline"
+                                      style={{
+                                        display: 'flex',
+                                        marginBottom: 8,
+                                      }}
+                                    >
+                                      <Form.Item
+                                        {...optionRestField}
+                                        name={[optionName, 'text']}
+                                        rules={[
+                                          {
+                                            required: true,
+                                            message: t('Option text required'),
+                                          },
+                                        ]}
+                                      >
+                                        <Input placeholder={t('Option text')} />
+                                      </Form.Item>
+                                      <Form.Item
+                                        {...optionRestField}
+                                        name={[optionName, 'isCorrect']}
+                                        valuePropName="checked"
+                                        style={{ margin: 0 }}
+                                      >
+                                        <Checkbox>{t('Correct')}</Checkbox>
+                                      </Form.Item>
+                                      <MinusCircleOutlined
+                                        onClick={() => removeOption(optionName)}
+                                      />
+                                    </Space>
+                                  ),
+                                )}
+                                <Form.Item>
+                                  <Button
+                                    type="dashed"
+                                    onClick={() => addOption()}
+                                    icon={<PlusOutlined />}
+                                    size="small"
+                                  >
+                                    {t('Add Option')}
+                                  </Button>
+                                </Form.Item>
+                              </>
+                            )}
+                          </Form.List>
+                        );
+                      }
+                      return null;
+                    }}
+                  </Form.Item>
                 </Card>
               ))}
               <Form.Item>

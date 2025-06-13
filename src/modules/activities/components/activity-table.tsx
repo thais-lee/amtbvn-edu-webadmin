@@ -1,4 +1,5 @@
 import {
+  CheckOutlined,
   DeleteOutlined,
   DownOutlined,
   EditOutlined,
@@ -26,17 +27,31 @@ import useApp from '@/hooks/use-app';
 
 import activityService from '../activity.service';
 import ActivityFormDrawer from './activity-drawer-form';
+import GradeDrawerForm from './grade-drawer-form';
 
 interface ActivityTableProps {
   courseId: number;
+  onGrade?: (activity: any) => void;
 }
 
-export default function ActivityTable({ courseId }: ActivityTableProps) {
+export default function ActivityTable({
+  courseId,
+  onGrade,
+}: ActivityTableProps) {
   const [formMode, setFormMode] = useState<'create' | 'update'>('create');
   const [openFormDrawer, setOpenFormDrawer] = useState(false);
   const [formId, setFormId] = useState<number>(0);
   const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
   const [search, setSearch] = useState('');
+
+  const [gradingActivity, setGradingActivity] = useState<any>(null);
+  const [gradingDrawerOpen, setGradingDrawerOpen] = useState(false);
+
+  const handleCloseGrading = () => {
+    setGradingDrawerOpen(false);
+    setGradingActivity(null);
+  };
+
   const [form] = Form.useForm();
 
   const handleDeleteMutation = useMutation({
@@ -180,6 +195,15 @@ export default function ActivityTable({ courseId }: ActivityTableProps) {
                       },
                     },
                     {
+                      label: t('Chấm điểm'),
+                      key: 'grade',
+                      icon: <CheckOutlined />,
+                      onClick: () => {
+                        setGradingActivity(record);
+                        setGradingDrawerOpen(true);
+                      },
+                    },
+                    {
                       label: t('Edit'),
                       key: 'edit',
                       icon: <EditOutlined />,
@@ -234,6 +258,12 @@ export default function ActivityTable({ courseId }: ActivityTableProps) {
         refetch={refetchActivities}
         courseId={courseId}
         id={formId}
+      />
+      <GradeDrawerForm
+        activityId={gradingActivity?.id}
+        activityTitle={gradingActivity?.title}
+        open={gradingDrawerOpen}
+        onClose={handleCloseGrading}
       />
     </div>
   );

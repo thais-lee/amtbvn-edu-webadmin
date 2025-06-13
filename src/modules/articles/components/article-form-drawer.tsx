@@ -99,6 +99,13 @@ const ArticleFormDrawer = ({
     }
   }, [article, form]);
 
+  //reset form when in create mode
+  useEffect(() => {
+    if (open && action === 'create') {
+      form.resetFields();
+    }
+  }, [open, form, action]);
+
   const handleSubmit = async (
     values: TCreateArticleDto | TUpdateArticleDto,
   ) => {

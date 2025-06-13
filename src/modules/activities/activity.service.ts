@@ -3,8 +3,12 @@ import { TPaginated } from '@/shared/types/paginated.type';
 
 import { TActivity } from './activity.model';
 import {
+  TActivityAttempt,
+  TAttemptDetailDto,
   TCreateActivityDto,
   TGetActivityDto,
+  TGetAttemptDto,
+  TGradeAttemptDto,
   TUpdateActivityDto,
 } from './dto/activity.dto';
 
@@ -14,6 +18,21 @@ class ActivityService {
       url: '/api/activities/',
       method: 'GET',
       params: input,
+    });
+  }
+
+  getAttempts(input?: TGetAttemptDto) {
+    return httpService.request<TPaginated<TActivityAttempt>>({
+      url: '/api/activities/attempts/admin/list',
+      method: 'GET',
+      params: input,
+    });
+  }
+
+  getAttemptDetail(id: number) {
+    return httpService.request<TAttemptDetailDto>({
+      url: `/api/activities/attempts/admin/${id}`,
+      method: 'GET',
     });
   }
 
@@ -46,6 +65,14 @@ class ActivityService {
     return httpService.request<TActivity>({
       url: `/api/activities/${id}`,
       method: 'DELETE',
+    });
+  }
+
+  gradeAttempt(id: number, data: TGradeAttemptDto) {
+    return httpService.request<TActivityAttempt>({
+      url: `/api/activities/attempts/admin/${id}/grade`,
+      method: 'POST',
+      data,
     });
   }
 }

@@ -47,9 +47,9 @@ const CategoryFormDrawer: React.FC<TCategoryFormDrawerProps> = ({
   });
 
   const handleValuesChange = (changedValues: any, allValues: any) => {
-    if (changedValues.slug) {
+    if (changedValues.name) {
       form.setFieldsValue({
-        name: slugify(changedValues.slug, {
+        slug: slugify(changedValues.name, {
           lower: true,
           strict: true,
           locale: 'vi',
@@ -160,12 +160,7 @@ const CategoryFormDrawer: React.FC<TCategoryFormDrawerProps> = ({
           </Form.Item>
 
           <Form.Item name="slug" label={t('Slug')}>
-            <SlugInput
-              autoSlugFrom={form.getFieldValue('name')}
-              parentSlugPrefix={
-                parentCategoriesId ? `${parentCategoriesId}_` : ''
-              }
-            />
+            <Input />
           </Form.Item>
 
           <Form.Item name="parentId" label={t('Parent category')}>
