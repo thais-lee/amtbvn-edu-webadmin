@@ -261,5 +261,11 @@
     "Đáp án": "Answer",
     "Đáp án sai": "Incorrect answer",
     "Có lỗi xảy ra khi lưu chấm điểm": "An error occurred when saving grading",
-    "Đã lưu chấm điểm thành công": "Grading saved successfully"
+    "Đã lưu chấm điểm thành công": "Grading saved successfully",
+    "File deleted successfully": "File deleted successfully",
+    "Failed to delete file": "Failed to delete file",
+    "Could not determine file id for deletion": "Could not determine file id for deletion",
+    "Không có tài liệu": "No documents",
+    "Existing Files": "Existing files",
+    "Remove": "Remove"
 }

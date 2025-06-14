@@ -126,6 +126,22 @@ function RouteComponent() {
       key: 'title',
     },
     {
+      title: t('Description'),
+      dataIndex: 'description',
+      render(value: string, record: any, index: number) {
+        //shorten the value to 100 characters rich text
+        const html = (value ?? '').replace(/<[^>]*>?/g, '');
+        return html.length > 100 ? html.slice(0, 100) + '...' : html;
+      },
+      width: 400,
+    },
+    {
+      title: t('tags', { defaultValue: 'Tags' }),
+      dataIndex: 'tags',
+      key: 'tags',
+      render: (tags: any) => tags?.join(', ') || '-',
+    },
+    {
       title: t('category', { defaultValue: 'Category' }),
       dataIndex: 'category',
       key: 'category',
@@ -179,7 +195,12 @@ function RouteComponent() {
             ],
           }}
         >
-          <Button type="text" icon={<DownOutlined />} />
+          <Button>
+            <Space>
+              {t('Actions')}
+              <DownOutlined />
+            </Space>
+          </Button>
         </Dropdown>
       ),
     },

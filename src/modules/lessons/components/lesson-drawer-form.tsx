@@ -1,5 +1,5 @@
 import { DeleteOutlined } from '@ant-design/icons';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import {
   Button,
   Divider,
@@ -76,6 +76,8 @@ interface LessonFormDrawerProps {
   action: 'create' | 'edit';
   item: TLesson | null;
   refetch?: () => void;
+  courseId?: number;
+  latestLessonId?: number;
 }
 
 const LessonFormDrawer = ({
@@ -84,6 +86,8 @@ const LessonFormDrawer = ({
   action,
   item,
   refetch,
+  courseId,
+  latestLessonId,
 }: LessonFormDrawerProps) => {
   const { t, antdApp } = useApp();
   const { message } = antdApp;
@@ -110,6 +114,11 @@ const LessonFormDrawer = ({
     lesson?.data?.attachments?.filter((a) => a.type === 'DOCUMENT') || [];
 
   useEffect(() => {
+    if (courseId) {
+      form.setFieldsValue({
+        courseId,
+      });
+    }
     if (lesson?.data) {
       form.setFieldsValue({
         title: lesson.data.title,
@@ -140,7 +149,29 @@ const LessonFormDrawer = ({
           .map((a) => a.fileId) || [],
       );
     }
-  }, [lesson, form]);
+  }, [lesson, form, courseId]);
+
+  const createMutation = useMutation({
+    mutationFn: (values: TCreateLessonDto) =>
+      lessonService.createLesson(values),
+    onSuccess: () => {
+      message.success(t('Created successfully'));
+    },
+    onError: () => {
+      message.error(t('An error occurred'));
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: (values: TUpdateLessonDto) =>
+      lessonService.updateLesson(item?.id || 0, values),
+    onSuccess: () => {
+      message.success(t('Updated successfully'));
+    },
+    onError: () => {
+      message.error(t('An error occurred'));
+    },
+  });
 
   const handleSubmit = async (values: TCreateLessonDto | TUpdateLessonDto) => {
     try {
@@ -172,13 +203,13 @@ const LessonFormDrawer = ({
       } else {
         payload.mediaFileIds = mediaFileIds;
         payload.documentFileIds = documentFileIds;
+        payload.courseId = courseId ?? values.courseId;
+        payload.previousId = latestLessonId;
       }
       if (action === 'create') {
-        await lessonService.createLesson(payload);
-        message.success(t('Created successfully'));
+        await createMutation.mutateAsync(payload);
       } else {
-        await lessonService.updateLesson(item?.id || 0, payload);
-        message.success(t('Updated successfully'));
+        await updateMutation.mutateAsync(payload);
       }
       setOpen(false);
       form.resetFields();
@@ -236,7 +267,7 @@ const LessonFormDrawer = ({
         <div style={{ marginBottom: 24 }}>
           <Divider orientation="left">{t('lesson.media', 'Media')}</Divider>
           {mediaAttachments.length === 0 && (
-            <Paragraph type="secondary">No media files.</Paragraph>
+            <Paragraph type="secondary">{t('Không có tài liệu')}</Paragraph>
           )}
           <ul>
             {mediaAttachments.map((a) => (
@@ -250,7 +281,7 @@ const LessonFormDrawer = ({
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  {a.file.fileName}
+                  {a.file.fileName.normalize('NFC')}
                 </a>
                 <Popconfirm
                   title={t('Delete')}
@@ -287,7 +318,7 @@ const LessonFormDrawer = ({
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  {a.file.fileName}
+                  {a.file.fileName.normalize('NFC')}
                 </a>
                 <Popconfirm
                   title={t('Delete')}
@@ -316,6 +347,10 @@ const LessonFormDrawer = ({
           status: ELessonStatus.DRAFT,
         }}
       >
+        {/* Hidden courseId field to ensure it is included in payload */}
+        <Form.Item name="courseId" noStyle>
+          <Input type="hidden" />
+        </Form.Item>
         <Form.Item
           name="title"
           label={t('Title')}

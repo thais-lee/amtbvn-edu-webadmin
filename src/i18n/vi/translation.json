@@ -206,5 +206,11 @@
     "Đáp án": "Đáp án",
     "Đáp án sai": "Đáp án sai",
     "Có lỗi xảy ra khi lưu chấm điểm": "Có lỗi xảy ra khi lưu chấm điểm",
-    "Đã lưu chấm điểm thành công": "Đã lưu chấm điểm thành công"
+    "Đã lưu chấm điểm thành công": "Đã lưu chấm điểm thành công",
+    "File deleted successfully": "Xóa tài liệu thành công",
+    "Failed to delete file": "Xóa tài liệu thất bại",
+    "Could not determine file id for deletion": "Không xác định được ID tài liệu để xóa",
+    "Không có tài liệu": "Không có tài liệu",
+    "Existing Files": "Tài liệu đã có",
+    "Remove": "Xóa"
 }

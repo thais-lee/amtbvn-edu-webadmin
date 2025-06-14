@@ -1,13 +1,14 @@
 import { InboxOutlined } from '@ant-design/icons';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Button, Drawer, Form, Input, Select, Upload, message } from 'antd';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import useApp from '@/hooks/use-app';
 import { TCategory } from '@/modules/categories/category.model';
 import categoryService from '@/modules/categories/category.service';
 import libraryMaterialService from '@/modules/library-materials/library-materials.service';
+import UploadFileComponent from '@/shared/components/upload-file';
 import { TPaginated } from '@/shared/types/paginated.type';
 
 import {
@@ -36,7 +37,8 @@ export default function LibraryMaterialFormDrawer({
   const { antdApp } = useApp();
   const { message: messageApi } = antdApp;
   const [form] = Form.useForm();
-  const [fileList, setFileList] = useState<any[]>([]);
+  const [fileIds, setFileIds] = useState<number[]>([]);
+  const [removedFileIds, setRemovedFileIds] = useState<number[]>([]);
 
   const { data: categories } = useQuery({
     queryKey: ['/categories/all'],
@@ -46,17 +48,48 @@ export default function LibraryMaterialFormDrawer({
   const { data: libraryMaterial } = useQuery({
     queryKey: ['/library-materials', id],
     queryFn: () => libraryMaterialService.getLibraryMaterial(id!),
-    enabled: !!id && action === 'update',
+    enabled: !!id && action === 'update' && open,
   });
 
+  // Update form values and file list when library material data changes
+  useEffect(() => {
+    if (libraryMaterial && action === 'update') {
+      // Update form fields
+      form.setFieldsValue({
+        title: libraryMaterial.title,
+        description: libraryMaterial.description,
+        categoryId: libraryMaterial.categoryId,
+        tags: libraryMaterial.tags,
+      });
+
+      // Update file list with existing files
+      if (libraryMaterial.files && libraryMaterial.files.length > 0) {
+        setFileIds(
+          libraryMaterial.files
+            .filter((file: any) => !removedFileIds.includes(file.id))
+            .map((file: any) => file.id),
+        );
+      }
+    }
+  }, [libraryMaterial, action, form, removedFileIds]);
+
+  // Reset form when drawer closes
+  useEffect(() => {
+    if (!open) {
+      form.resetFields();
+      setFileIds([]);
+      setRemovedFileIds([]);
+    }
+  }, [open, form]);
+
   const createLibraryMaterial = useMutation({
-    mutationFn: (formData: FormData) =>
-      libraryMaterialService.createLibraryMaterial(formData),
+    mutationFn: (input: TCreateLibraryMaterialDto) =>
+      libraryMaterialService.createLibraryMaterial(input),
     onSuccess: () => {
       messageApi.success(t('Created successfully'));
       setOpen(false);
       form.resetFields();
-      setFileList([]);
+      setFileIds([]);
       refetch?.();
     },
     onError: () => {
@@ -65,12 +98,13 @@ export default function LibraryMaterialFormDrawer({
   });
 
   const updateLibraryMaterial = useMutation({
-    mutationFn: (values: any) =>
-      libraryMaterialService.updateLibraryMaterial(id!, values),
+    mutationFn: (input: TUpdateLibraryMaterialDto) =>
+      libraryMaterialService.updateLibraryMaterial(id!, input),
     onSuccess: () => {
       messageApi.success(t('Updated successfully'));
       setOpen(false);
       form.resetFields();
+      setFileIds([]);
       refetch?.();
     },
     onError: () => {
@@ -82,34 +116,22 @@ export default function LibraryMaterialFormDrawer({
     values: TCreateLibraryMaterialDto | TUpdateLibraryMaterialDto,
   ) => {
     try {
-      const formData = new FormData();
-      Object.entries(values).forEach(([key, value]) => {
-        if (value !== undefined) {
-          if (key === 'tags') {
-            formData.append(key, JSON.stringify(value));
-          } else {
-            formData.append(key, value as string);
-          }
-        }
-      });
-
-      fileList.forEach((file) => {
-        formData.append('files', file.originFileObj);
-      });
-
+      const payload: any = {
+        ...values,
+        fileIds,
+        fileIdsToRemove: removedFileIds,
+      };
       if (action === 'create') {
-        await libraryMaterialService.createLibraryMaterial(formData);
+        await libraryMaterialService.createLibraryMaterial(payload);
         message.success(t('Created successfully'));
       } else {
-        await libraryMaterialService.updateLibraryMaterial(
-          id!,
-          values as TUpdateLibraryMaterialDto,
-        );
+        await updateLibraryMaterial.mutateAsync(payload);
         message.success(t('Updated successfully'));
       }
       setOpen(false);
       form.resetFields();
-      setFileList([]);
+      setFileIds([]);
+      setRemovedFileIds([]);
       refetch?.();
     } catch (error) {
       message.error(t('An error occurred'));
@@ -138,6 +160,41 @@ export default function LibraryMaterialFormDrawer({
         onFinish={handleSubmit}
         initialValues={libraryMaterial}
       >
+        {/* Existing files section */}
+        {libraryMaterial?.files && libraryMaterial.files.length > 0 && (
+          <div style={{ marginBottom: 16 }}>
+            <b>{t('Existing Files')}</b>
+            <ul>
+              {libraryMaterial.files
+                .filter((file: any) => !removedFileIds.includes(file.id))
+                .map((file: any) => (
+                  <li
+                    key={file.id}
+                    style={{ display: 'flex', alignItems: 'center', gap: 8 }}
+                  >
+                    <a
+                      href={file.storagePath}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {file.fileName.normalize('NFC')}
+                    </a>
+                    <Button
+                      size="small"
+                      danger
+                      onClick={() =>
+                        setRemovedFileIds((ids) => [...ids, file.id])
+                      }
+                      style={{ marginLeft: 8 }}
+                    >
+                      {t('Remove')}
+                    </Button>
+                  </li>
+                ))}
+            </ul>
+          </div>
+        )}
+
         <Form.Item
           name="title"
           label={t('Title')}
@@ -158,7 +215,7 @@ export default function LibraryMaterialFormDrawer({
           <Select
             options={(categories?.data as TPaginated<TCategory>)?.items.map(
               (category) => ({
-                label: category.name,
+                label: category.name + ' (' + category.slug + ')',
                 value: category.id,
               }),
             )}
@@ -173,32 +230,21 @@ export default function LibraryMaterialFormDrawer({
           />
         </Form.Item>
 
-        {action === 'create' && (
-          <Form.Item
-            label={t('Files')}
-            rules={[{ required: true, message: t('Please upload files!') }]}
-          >
-            <Dragger
-              multiple
-              fileList={fileList}
-              onChange={({ fileList }) => setFileList(fileList)}
-              beforeUpload={() => false}
-              accept=".pdf,.doc,.docx,.mp4,.mpeg,.mov,.avi,.wmv,.mp3,.wav,.ogg,.m4a"
-            >
-              <p className="ant-upload-drag-icon">
-                <InboxOutlined />
-              </p>
-              <p className="ant-upload-text">
-                {t('Click or drag files to this area to upload')}
-              </p>
-              <p className="ant-upload-hint">
-                {t(
-                  'Support for PDF, DOC, DOCX, MP4, MPEG, MOV, AVI, WMV, MP3, WAV, OGG, M4A',
-                )}
-              </p>
-            </Dragger>
-          </Form.Item>
-        )}
+        <Form.Item label={t('Files')} required={action === 'create'}>
+          <UploadFileComponent
+            onFileSelect={setFileIds}
+            initialFiles={libraryMaterial?.files
+              ?.filter((file: any) => !removedFileIds.includes(file.id))
+              .map((file: any) => ({
+                id: file.id,
+                fileName: file.fileName,
+                url: file.storagePath,
+              }))}
+            multiple
+            //TODO: add more file types for video/ audio/ image
+            accept=".pdf,.doc,.docx,.mp4,.mpeg,.mov,.avi,.wmv,.mp3,.wav,.ogg,.m4a,.jpg,.jpeg,.png,.gif,.webp,.svg,.tiff"
+          />
+        </Form.Item>
       </Form>
     </Drawer>
   );

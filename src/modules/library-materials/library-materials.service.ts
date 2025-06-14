@@ -30,12 +30,11 @@ class LibraryMaterialsService {
     return response.data;
   };
 
-  createLibraryMaterial = async (formData: FormData) => {
+  createLibraryMaterial = async (input: TCreateLibraryMaterialDto) => {
     const response = await httpService.request<TLibraryMaterial>({
       url: '/api/library-materials/create',
       method: 'POST',
-      data: formData,
-      contentType: 'multipart/form-data',
+      data: input,
     });
     return response.data;
   };
@@ -65,6 +64,15 @@ class LibraryMaterialsService {
       url: '/api/library-materials/delete-many',
       method: 'DELETE',
       data: ids,
+    });
+    return response.data;
+  };
+
+  updateLibraryMaterialWithFormData = async (id: number, data: FormData) => {
+    const response = await httpService.request<TLibraryMaterial>({
+      url: `/api/library-materials/${id}`,
+      method: 'PATCH',
+      data: data,
     });
     return response.data;
   };

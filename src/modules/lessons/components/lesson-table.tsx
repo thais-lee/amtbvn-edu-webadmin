@@ -1,7 +1,7 @@
-import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
+import { CheckOutlined, CloseOutlined, PlusOutlined } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
 import { Button, Space, Table, Tag } from 'antd';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import useApp from '@/hooks/use-app';
 import DayFormat from '@/shared/components/day-format';
@@ -23,7 +23,7 @@ export default function LessonTable({ courseId }: LessonTableProps) {
   const [drawerItem, setDrawerItem] = useState<TLesson | null>(null);
   const { t } = useApp();
 
-  const { data: lessons } = useQuery({
+  const { data: lessons, refetch: refetchLessons } = useQuery({
     queryKey: ['lessons'],
     queryFn: () =>
       lessonService.getAllLessons({
@@ -31,10 +31,38 @@ export default function LessonTable({ courseId }: LessonTableProps) {
       }),
   });
 
+  const sortedLessons = lessons?.data
+    ? [...lessons.data].sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      )
+    : [];
+  const latestLessonId =
+    sortedLessons.length > 0 ? sortedLessons[0].id : undefined;
+
+  useEffect(() => {
+    if (refetch) {
+      setRefetch(false);
+      refetchLessons();
+    }
+  }, [refetch, refetchLessons]);
+
   return (
     <div>
+      <Button
+        type="primary"
+        icon={<PlusOutlined />}
+        style={{ marginBottom: 16 }}
+        onClick={() => {
+          setOpen(true);
+          setDrawerMode('create');
+          setDrawerItem(null);
+        }}
+      >
+        {t('Create')}
+      </Button>
       <Table
-        dataSource={lessons?.data || []}
+        dataSource={sortedLessons}
         columns={[
           {
             title: t('Title'),
@@ -126,6 +154,8 @@ export default function LessonTable({ courseId }: LessonTableProps) {
         action={drawerMode}
         item={drawerItem}
         refetch={() => setRefetch(!refetch)}
+        courseId={courseId}
+        latestLessonId={latestLessonId}
       />
     </div>
   );
