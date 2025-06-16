@@ -7,9 +7,8 @@ import {
 } from '@ant-design/icons';
 import { css } from '@emotion/react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router';
 import {
-  Avatar,
   Button,
   Divider,
   Dropdown,
@@ -26,7 +25,6 @@ import { useState } from 'react';
 import { useDebounce } from 'react-use';
 
 import useApp from '@/hooks/use-app';
-import { TArticle } from '@/modules/articles/article.model';
 import articleService from '@/modules/articles/article.service';
 import ArticleFormDrawer from '@/modules/articles/components/article-form-drawer';
 import ArticlePreviewDrawer from '@/modules/articles/components/article-preview-drawer';
@@ -46,8 +44,7 @@ type TTableParams = {
 };
 
 function RouteComponent() {
-  const { t, token, antdApp } = useApp();
-  const navigate = useNavigate();
+  const { t, token, antdApp, isDarkTheme } = useApp();
   const { message, modal } = antdApp;
 
   const [tableParams, setTableParams] = useState<TTableParams>({
@@ -343,7 +340,9 @@ function RouteComponent() {
             },
           }}
           css={css`
-            background: ${token.colorBgContainer};
+            background: ${isDarkTheme
+              ? token.colorBgContainer
+              : token.colorBgElevated};
             border-radius: ${token.borderRadius}px;
             padding: ${token.padding}px;
           `}

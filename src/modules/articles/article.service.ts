@@ -2,11 +2,7 @@ import httpService from '@/shared/http-service';
 import { TPaginated } from '@/shared/types/paginated.type';
 
 import { TArticle } from './article.model';
-import {
-  TCreateArticleDto,
-  TGetArticlesDto,
-  TUpdateArticleDto,
-} from './dto/article.dto';
+import { TGetArticlesDto, TUpdateArticleDto } from './dto/article.dto';
 
 class ArticleService {
   getOne(id: number) {

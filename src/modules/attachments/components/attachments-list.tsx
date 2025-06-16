@@ -1,41 +1,36 @@
-import {
-  Button,
-  DatePicker,
-  Form,
-  Input,
-  Modal,
-  Space,
-  Table,
-  message,
-} from 'antd';
+import { Button, DatePicker, Form, Input, Modal, Space, Table } from 'antd';
 import dayjs from 'dayjs';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+
+import useApp from '@/hooks/use-app';
 
 import { TAttachment } from '../attachment.model';
 import attachmentService from '../attachment.service';
 
 export const AttachmentsList: React.FC = () => {
+  const { t, antdApp } = useApp();
+  const { message } = antdApp;
   const [attachments, setAttachments] = useState<TAttachment[]>([]);
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [form] = Form.useForm();
   const [editingId, setEditingId] = useState<number | null>(null);
 
-  const fetchActivities = async () => {
+  const fetchActivities = useCallback(async () => {
     try {
       setLoading(true);
       const data = await attachmentService.getAttachments();
       setAttachments(data);
     } catch (error) {
-      message.error('Failed to fetch activities');
+      message.error(`${t('Failed to fetch activities')}: ${error}`);
     } finally {
       setLoading(false);
     }
-  };
+  }, [message, t]);
 
   useEffect(() => {
     fetchActivities();
-  }, []);
+  }, [fetchActivities]);
 
   const handleCreate = async (values: any) => {
     try {
@@ -50,7 +45,7 @@ export const AttachmentsList: React.FC = () => {
       form.resetFields();
       fetchActivities();
     } catch (error) {
-      message.error('Failed to create activity');
+      message.error(`${t('Failed to create activity')}: ${error}`);
     }
   };
 
@@ -69,7 +64,7 @@ export const AttachmentsList: React.FC = () => {
       setEditingId(null);
       fetchActivities();
     } catch (error) {
-      message.error('Failed to update activity');
+      message.error(`${t('Failed to update activity')}: ${error}`);
     }
   };
 
@@ -79,7 +74,7 @@ export const AttachmentsList: React.FC = () => {
       message.success('Activity deleted successfully');
       fetchActivities();
     } catch (error) {
-      message.error('Failed to delete activity');
+      message.error(`${t('Failed to delete activity')}: ${error}`);
     }
   };
 

@@ -1,4 +1,3 @@
-import { TAttachment } from '../attachments/attachment.model';
 import { TCourse } from '../courses/course.model';
 import { TLesson } from '../lessons/lesson.model';
 import {
@@ -23,6 +22,5 @@ export interface TActivity {
   updatedAt: Date;
   lesson?: TLesson;
   course?: TCourse;
-  // materials?: TAttachment[];
   questions?: TActivityQuestion[];
 }

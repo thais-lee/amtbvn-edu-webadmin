@@ -1,20 +1,10 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import {
-  App,
-  Button,
-  Drawer,
-  Form,
-  Input,
-  Select,
-  Skeleton,
-  Space,
-} from 'antd';
-import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Button, Drawer, Form, Input, Select, Skeleton, Space } from 'antd';
+import { useEffect } from 'react';
 import slugify from 'slugify';
 
+import useApp from '@/hooks/use-app';
 import UploadAvatar from '@/modules/users/components/upload-avatar';
-import SlugInput from '@/shared/components/slug-input';
 
 import categoryService from '../category.service';
 
@@ -35,9 +25,9 @@ const CategoryFormDrawer: React.FC<TCategoryFormDrawerProps> = ({
   refetch,
   parentCategoriesId = undefined,
 }: TCategoryFormDrawerProps) => {
-  const { t } = useTranslation();
+  const { t, antdApp } = useApp();
 
-  const { message } = App.useApp();
+  const { message } = antdApp;
   const [form] = Form.useForm();
 
   const parentCategoriesQuery = useQuery({
@@ -46,7 +36,7 @@ const CategoryFormDrawer: React.FC<TCategoryFormDrawerProps> = ({
       categoryService.getAllCategories({ parentId: parentCategoriesId }),
   });
 
-  const handleValuesChange = (changedValues: any, allValues: any) => {
+  const handleValuesChange = (changedValues: any, _: any) => {
     if (changedValues.name) {
       form.setFieldsValue({
         slug: slugify(changedValues.name, {

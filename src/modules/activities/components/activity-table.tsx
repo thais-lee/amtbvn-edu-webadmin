@@ -17,7 +17,6 @@ import {
   Popover,
   Space,
   Table,
-  message,
 } from 'antd';
 import modal from 'antd/es/modal';
 import dayjs from 'dayjs';
@@ -31,13 +30,9 @@ import GradeDrawerForm from './grade-drawer-form';
 
 interface ActivityTableProps {
   courseId: number;
-  onGrade?: (activity: any) => void;
 }
 
-export default function ActivityTable({
-  courseId,
-  onGrade,
-}: ActivityTableProps) {
+export default function ActivityTable({ courseId }: ActivityTableProps) {
   const [formMode, setFormMode] = useState<'create' | 'update'>('create');
   const [openFormDrawer, setOpenFormDrawer] = useState(false);
   const [formId, setFormId] = useState<number>(0);
@@ -62,7 +57,8 @@ export default function ActivityTable({
     },
   });
 
-  const { t, token } = useApp();
+  const { t, token, isDarkTheme, antdApp } = useApp();
+  const { message } = antdApp;
 
   const { data: activities, refetch: refetchActivities } = useQuery({
     queryKey: ['activities'],
@@ -246,7 +242,9 @@ export default function ActivityTable({
           },
         ]}
         css={css`
-          background: ${token.colorBgContainer};
+          background: ${isDarkTheme
+            ? token.colorBgContainer
+            : token.colorBgElevated};
           border-radius: ${token.borderRadius}px;
           padding: ${token.padding}px;
         `}

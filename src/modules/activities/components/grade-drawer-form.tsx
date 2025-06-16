@@ -1,15 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import {
-  Button,
-  Card,
-  Collapse,
-  Drawer,
-  Input,
-  List,
-  Space,
-  Typography,
-  message,
-} from 'antd';
+import { Button, Collapse, Drawer, Input, List, Space, Typography } from 'antd';
 import dayjs from 'dayjs';
 import { useState } from 'react';
 
@@ -20,7 +10,6 @@ import { EActivityAttemptGradingStatus } from '../dto/activity.dto';
 import GradeCardForm from './grade-card-form';
 
 const { Text } = Typography;
-const { TextArea } = Input;
 const { Panel } = Collapse;
 const { Search } = Input;
 
@@ -38,13 +27,10 @@ export default function GradeDrawerForm({
   onClose,
 }: GradeDrawerFormProps) {
   const [gradingAttempt, setGradingAttempt] = useState<any>(null);
-  const [score, setScore] = useState<number | null>(null);
-  const [feedback, setFeedback] = useState('');
-  const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState('');
   const { t } = useApp();
 
-  const { data: attempts, isLoading } = useQuery({
+  const { data: attempts } = useQuery({
     queryKey: ['attempts', activityId, search],
     queryFn: () =>
       activityService.getAttempts({
@@ -69,17 +55,6 @@ export default function GradeDrawerForm({
 
   const handleGrade = (attempt: any) => {
     setGradingAttempt(attempt);
-    setScore(attempt.score ?? null);
-    setFeedback(attempt.feedback ?? '');
-  };
-
-  const handleSave = () => {
-    setSaving(true);
-    setTimeout(() => {
-      setSaving(false);
-      message.success('Đã lưu chấm điểm (mock)');
-      setGradingAttempt(null);
-    }, 1000);
   };
 
   return (

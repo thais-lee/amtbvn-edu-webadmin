@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { Button, Drawer, Form, Input, Select, Space, Switch } from 'antd';
 import { useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 import slugify from 'slugify';
 
+import useApp from '@/hooks/use-app';
 import categoryService from '@/modules/categories/category.service';
 import QuillWrapper from '@/shared/components/quill-wrapper';
 
@@ -25,7 +25,7 @@ const CourseFormDrawer = ({
   loading,
 }: CourseFormDrawerProps) => {
   const [form] = Form.useForm();
-  const { t } = useTranslation();
+  const { t } = useApp();
 
   useEffect(() => {
     if (open) {
@@ -53,7 +53,7 @@ const CourseFormDrawer = ({
       }),
   });
 
-  const handleValuesChange = (changedValues: any, allValues: any) => {
+  const handleValuesChange = (changedValues: any, _: any) => {
     if (changedValues.name) {
       const slug = slugify(changedValues.name, {
         lower: true,
@@ -140,7 +140,7 @@ const CourseFormDrawer = ({
           />
         </Form.Item>
 
-        <Form.Item name="requireApproval" label={t('Require approval')}>
+        <Form.Item name="requireApproval" label={t('Require Approval')}>
           <Switch />
         </Form.Item>
       </Form>

@@ -1,8 +1,6 @@
-import { InboxOutlined } from '@ant-design/icons';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { Button, Drawer, Form, Input, Select, Upload, message } from 'antd';
+import { Button, Drawer, Form, Input, Select, message } from 'antd';
 import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import useApp from '@/hooks/use-app';
 import { TCategory } from '@/modules/categories/category.model';
@@ -15,8 +13,6 @@ import {
   TCreateLibraryMaterialDto,
   TUpdateLibraryMaterialDto,
 } from '../dto/library-material.dto';
-
-const { Dragger } = Upload;
 
 type TLibraryMaterialFormDrawerProps = {
   open: boolean;
@@ -33,7 +29,7 @@ export default function LibraryMaterialFormDrawer({
   id,
   refetch,
 }: TLibraryMaterialFormDrawerProps) {
-  const { t } = useTranslation();
+  const { t } = useApp();
   const { antdApp } = useApp();
   const { message: messageApi } = antdApp;
   const [form] = Form.useForm();
@@ -82,21 +78,6 @@ export default function LibraryMaterialFormDrawer({
     }
   }, [open, form]);
 
-  const createLibraryMaterial = useMutation({
-    mutationFn: (input: TCreateLibraryMaterialDto) =>
-      libraryMaterialService.createLibraryMaterial(input),
-    onSuccess: () => {
-      messageApi.success(t('Created successfully'));
-      setOpen(false);
-      form.resetFields();
-      setFileIds([]);
-      refetch?.();
-    },
-    onError: () => {
-      messageApi.error(t('An error occurred'));
-    },
-  });
-
   const updateLibraryMaterial = useMutation({
     mutationFn: (input: TUpdateLibraryMaterialDto) =>
       libraryMaterialService.updateLibraryMaterial(id!, input),
@@ -134,7 +115,7 @@ export default function LibraryMaterialFormDrawer({
       setRemovedFileIds([]);
       refetch?.();
     } catch (error) {
-      message.error(t('An error occurred'));
+      message.error(`${t('An error occurred')}: ${error}`);
     }
   };
 

@@ -17,11 +17,8 @@ import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 
 import useApp from '@/hooks/use-app';
-import { TCreateArticleDto } from '@/modules/articles/dto/article.dto';
 import lessonService from '@/modules/lessons/lesson.service';
 import UploadFileComponent from '@/shared/components/upload-file';
-import UploadImage from '@/shared/components/upload-image';
-import { ArticleStatus, ArticlesType } from '@/shared/types/article.type';
 
 import {
   ELessonStatus,
@@ -217,7 +214,7 @@ const LessonFormDrawer = ({
       setDocumentFileIds([]);
       refetch?.();
     } catch (error) {
-      message.error(t('An error occurred'));
+      message.error(`${t('An error occurred')}: ${error}`);
     }
   };
 
@@ -235,7 +232,7 @@ const LessonFormDrawer = ({
       message.success(t('Deleted successfully'));
       refetch?.();
     } catch (error) {
-      message.error(t('An error occurred'));
+      message.error(`${t('An error occurred')}: ${error}`);
     }
   };
 

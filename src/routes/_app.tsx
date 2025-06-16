@@ -1,8 +1,6 @@
 import { css } from '@emotion/react';
-import { useMutation } from '@tanstack/react-query';
 import { Outlet, createFileRoute, useNavigate } from '@tanstack/react-router';
-import { Image, Layout, Space, Spin } from 'antd';
-import { onMessage } from 'firebase/messaging';
+import { Layout, Spin } from 'antd';
 import { useEffect, useState } from 'react';
 
 import useApp from '@/hooks/use-app';
@@ -23,7 +21,7 @@ function AppLayout() {
 
   const authQuery = useAuth();
 
-  const { token, antdApp } = useApp();
+  const { token } = useApp();
 
   const [collapsed, setCollapsed] = useState(false);
 

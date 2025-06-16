@@ -1,7 +1,7 @@
 import { HomeOutlined } from '@ant-design/icons';
 import { css } from '@emotion/react';
-import { Link, useNavigate } from '@tanstack/react-router';
-import { Breadcrumb, theme } from 'antd';
+import { Link } from '@tanstack/react-router';
+import { Breadcrumb } from 'antd';
 
 import useApp from '@/hooks/use-app';
 
@@ -13,8 +13,7 @@ type TBreadcrumbProps = {
 };
 
 const BreadcrumbComponent = ({ items }: TBreadcrumbProps) => {
-  const { t, token } = useApp();
-  const navigate = useNavigate();
+  const { token } = useApp();
 
   const breadcrumbItems = [
     {

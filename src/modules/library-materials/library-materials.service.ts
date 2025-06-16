@@ -8,11 +8,6 @@ import {
 } from './dto/library-material.dto';
 import { TLibraryMaterial } from './library-materials.model';
 
-interface TPaginatedResponse<T> {
-  items: T[];
-  total: number;
-}
-
 class LibraryMaterialsService {
   getLibraryMaterials = (input: TGetLibraryMaterialsDto) => {
     return httpService.request<TPaginated<TLibraryMaterial>>({

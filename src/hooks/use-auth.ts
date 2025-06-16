@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { message } from 'antd';
 import Cookies from 'js-cookie';
 
 import authService from '@/modules/auth/auth.service';
@@ -22,6 +23,7 @@ export const useAuth = () => {
 
       return user;
     } catch (error) {
+      message.error(`Đăng nhập thất bại: ${error}`);
       setUser(null);
     }
   };

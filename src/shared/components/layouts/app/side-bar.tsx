@@ -1,8 +1,4 @@
-import {
-  AppstoreOutlined,
-  DeploymentUnitOutlined,
-  TeamOutlined,
-} from '@ant-design/icons';
+import { AppstoreOutlined, TeamOutlined } from '@ant-design/icons';
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import { useNavigate } from '@tanstack/react-router';

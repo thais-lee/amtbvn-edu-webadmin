@@ -90,9 +90,9 @@ class AuthService {
         ).toISOString(),
       );
 
-      return true;
+      return;
     } catch (error) {
-      return false;
+      return error;
     }
   }
 

@@ -1,4 +1,3 @@
-import { css } from '@emotion/react';
 import { useQuery } from '@tanstack/react-query';
 import { Button, Descriptions, Drawer, Empty, Image, Skeleton } from 'antd';
 import dayjs from 'dayjs';
@@ -18,7 +17,7 @@ const LibraryMaterialPreviewDrawer: React.FC<TLibraryMaterialPreviewProps> = ({
   setOpen,
   id,
 }: TLibraryMaterialPreviewProps) => {
-  const { t, token } = useApp();
+  const { t } = useApp();
 
   const getLibraryMaterialQuery = useQuery({
     queryKey: ['/library-materials/get-one', id],

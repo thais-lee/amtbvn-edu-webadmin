@@ -237,5 +237,13 @@
     "Create user": "Tạo người dùng",
     "Update user": "Cập nhật người dùng",
     "View": "Xem",
-    "Delete": "Xóa"
+    "Delete": "Xóa",
+    "Loading": "Đang tải",
+    "Failed to fetch activities": "Lấy danh sách hoạt động thất bại",
+    "Failed to create activity": "Tạo hoạt động thất bại",
+    "Failed to update activity": "Cập nhật hoạt động thất bại",
+    "Failed to delete activity": "Xóa hoạt động thất bại",
+    "Activity updated successfully": "Cập nhật hoạt động thành công",
+    "Activity deleted successfully": "Xóa hoạt động thành công",
+    "Activity created successfully": "Tạo hoạt động thành công"
 }

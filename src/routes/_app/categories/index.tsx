@@ -15,7 +15,6 @@ import {
   Flex,
   Input,
   Popover,
-  Skeleton,
   Space,
   Table,
   TablePaginationConfig,
@@ -42,7 +41,7 @@ type TTableParams = {
 };
 
 function RouteComponent() {
-  const { t, token, antdApp } = useApp();
+  const { t, token, antdApp, isDarkTheme } = useApp();
   const navigate = useNavigate();
   const { message, modal } = antdApp;
 
@@ -312,7 +311,9 @@ function RouteComponent() {
             },
           }}
           css={css`
-            background: ${token.colorBgContainer};
+            background: ${isDarkTheme
+              ? token.colorBgContainer
+              : token.colorBgElevated};
             border-radius: ${token.borderRadius}px;
             padding: ${token.padding}px;
           `}

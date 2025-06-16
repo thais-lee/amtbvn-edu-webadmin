@@ -1,6 +1,6 @@
 import { DownOutlined } from '@ant-design/icons';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { Link, createFileRoute, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import {
   Button,
   Dropdown,
@@ -170,7 +170,7 @@ function RouteComponent() {
           {
             title: t('Description'),
             dataIndex: 'description',
-            render(value, record, index) {
+            render(value, _: any, __: number) {
               //shorten the value to 100 characters rich text
               const html = value.replace(/<[^>]*>?/g, '');
               return html.length > 100 ? html.slice(0, 100) + '...' : html;

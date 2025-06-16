@@ -276,5 +276,13 @@
     "Manage lessons": "Manage lessons",
     "Manage users": "Manage users",
     "Manage library materials": "Manage library materials",
-    "Sub categories count": "Sub categories count"
+    "Sub categories count": "Sub categories count",
+    "Loading": "Loading",
+    "Failed to fetch activities": "Failed to fetch activities",
+    "Failed to create activity": "Failed to create activity",
+    "Failed to update activity": "Failed to update activity",
+    "Failed to delete activity": "Failed to delete activity",
+    "Activity updated successfully": "Activity updated successfully",
+    "Activity deleted successfully": "Activity deleted successfully",
+    "Activity created successfully": "Activity created successfully"
 }

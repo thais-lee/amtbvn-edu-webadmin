@@ -7,7 +7,7 @@ import {
 } from '@ant-design/icons';
 import { css } from '@emotion/react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router';
 import {
   Button,
   Divider,
@@ -19,7 +19,7 @@ import {
   Table,
   TablePaginationConfig,
 } from 'antd';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useDebounce } from 'react-use';
 
 import useApp from '@/hooks/use-app';
@@ -41,8 +41,8 @@ type TTableParams = {
 };
 
 function RouteComponent() {
-  const { t, token, antdApp } = useApp();
-  const navigate = useNavigate();
+  const { t, token, antdApp, isDarkTheme } = useApp();
+
   const { message, modal } = antdApp;
 
   const [tableParams, setTableParams] = useState<TTableParams>({
@@ -128,7 +128,7 @@ function RouteComponent() {
     {
       title: t('Description'),
       dataIndex: 'description',
-      render(value: string, record: any, index: number) {
+      render(value: string, _: any, __: number) {
         //shorten the value to 100 characters rich text
         const html = (value ?? '').replace(/<[^>]*>?/g, '');
         return html.length > 100 ? html.slice(0, 100) + '...' : html;
@@ -304,7 +304,9 @@ function RouteComponent() {
             },
           }}
           css={css`
-            background: ${token.colorBgContainer};
+            background: ${isDarkTheme
+              ? token.colorBgContainer
+              : token.colorBgElevated};
             border-radius: ${token.borderRadius}px;
             padding: ${token.padding}px;
           `}

@@ -25,7 +25,8 @@ export const Route = createFileRoute('/_app/categories/$parentId')({
 });
 
 function SubCategoriesView() {
-  const { t, token } = useApp();
+  const { t, token, isDarkTheme, antdApp } = useApp();
+  const { modal } = antdApp;
   const navigate = useNavigate();
   const { parentId: parentSlug } = useParams({
     from: '/_app/categories/$parentId',
@@ -36,10 +37,8 @@ function SubCategoriesView() {
   const [openFormDrawer, setOpenFormDrawer] = useState(false);
   const [formMode, setFormMode] = useState<'create' | 'update'>('create');
   const [formId, setFormId] = useState<number>(0);
-  const [modal, setModal] = useState<any>(null);
   const [openPreviewDrawer, setOpenPreviewDrawer] = useState(false);
   const [selectedId, setSelectedId] = useState<number>(0);
-  const [openDeleteModal, setOpenDeleteModal] = useState(false);
 
   // Get current category data by slug
   const {
@@ -256,7 +255,9 @@ function SubCategoriesView() {
                 setPagination({ current: page, pageSize }),
             }}
             css={{
-              background: token.colorBgContainer,
+              background: isDarkTheme
+                ? token.colorBgContainer
+                : token.colorBgElevated,
               borderRadius: token.borderRadius,
               padding: token.padding,
             }}

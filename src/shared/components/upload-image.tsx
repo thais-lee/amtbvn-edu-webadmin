@@ -26,7 +26,7 @@ const UploadImage = ({
   onFileSelect,
   aspectRatio,
 }: TUploadImageProps) => {
-  const { t, token } = useApp();
+  const { t } = useApp();
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState(initialImageUrl);
 

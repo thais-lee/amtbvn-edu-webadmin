@@ -5,11 +5,9 @@ import { TActivity } from './activity.model';
 import {
   TActivityAttempt,
   TAttemptDetailDto,
-  TCreateActivityDto,
   TGetActivityDto,
   TGetAttemptDto,
   TGradeAttemptDto,
-  TUpdateActivityDto,
 } from './dto/activity.dto';
 
 class ActivityService {

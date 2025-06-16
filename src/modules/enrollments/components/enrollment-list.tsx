@@ -13,12 +13,10 @@ import {
   Space,
   Table,
   TablePaginationConfig,
-  Tag,
   Typography,
-  message,
 } from 'antd';
 import dayjs from 'dayjs';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useDebounce } from 'react-use';
 
 import useApp from '@/hooks/use-app';
@@ -48,7 +46,7 @@ type TTableParams = {
 export const EnrollmentList: React.FC<EnrollmentListProps> = ({
   courseId,
 }: EnrollmentListProps) => {
-  const { t, token, antdApp } = useApp();
+  const { t, token, antdApp, isDarkTheme } = useApp();
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
   const [search, setSearch] = useState<string>('');
@@ -59,7 +57,6 @@ export const EnrollmentList: React.FC<EnrollmentListProps> = ({
     userId: 0,
     courseId: courseId,
   });
-  const [selectedId, setSelectedId] = useState<number>(0);
   const [formMode, setFormMode] = useState<'create' | 'update'>('create');
   const [userSearch, setUserSearch] = useState<string>('');
   const [debouncedUserSearch, setDebouncedUserSearch] = useState('');
@@ -362,7 +359,9 @@ export const EnrollmentList: React.FC<EnrollmentListProps> = ({
           },
         }}
         css={css`
-          background: ${token.colorBgContainer};
+          background: ${isDarkTheme
+            ? token.colorBgContainer
+            : token.colorBgElevated};
           border-radius: ${token.borderRadius}px;
           padding: ${token.padding}px;
         `}
@@ -387,7 +386,9 @@ export const EnrollmentList: React.FC<EnrollmentListProps> = ({
                   placeholder="Search user"
                   filterOption={false}
                   onSearch={setUserSearch}
-                  notFoundContent={isFetching ? <span>Loading...</span> : null}
+                  notFoundContent={
+                    isFetching ? <span>{t('Loading')}...</span> : null
+                  }
                   options={userOptions}
                 />
               </Form.Item>
