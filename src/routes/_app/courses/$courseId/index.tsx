@@ -169,7 +169,7 @@ function RouteComponent() {
           {JSON.stringify(drawerItem, null, 2)}
         </pre>
         <Button type="primary" style={{ marginTop: 16 }} disabled>
-          Lưu (Demo)
+          {t('Save')}
         </Button>
       </div>
     );
@@ -182,7 +182,7 @@ function RouteComponent() {
           icon={<ArrowLeftOutlined />}
           onClick={() => navigate({ to: '/courses' })}
         >
-          Go back
+          {t('Go back')}
         </BackButton>
         <BannerImg src={course?.data?.bannerFileUrl} alt={course?.data?.name} />
       </BannerContainer>

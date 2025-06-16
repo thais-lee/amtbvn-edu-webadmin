@@ -267,5 +267,14 @@
     "Could not determine file id for deletion": "Could not determine file id for deletion",
     "Không có tài liệu": "No documents",
     "Existing Files": "Existing files",
-    "Remove": "Remove"
+    "Remove": "Remove",
+    "Manage categories": "Manage categories",
+    "Manage articles": "Manage articles",
+    "Manage enrollments": "Manage enrollments",
+    "Manage activities": "Manage activities",
+    "Manage courses": "Manage courses",
+    "Manage lessons": "Manage lessons",
+    "Manage users": "Manage users",
+    "Manage library materials": "Manage library materials",
+    "Sub categories count": "Sub categories count"
 }

@@ -116,29 +116,29 @@ function RouteComponent() {
   // Columns for main category table
   const columns = [
     {
-      title: t('categoryName', { defaultValue: 'Category Name' }),
+      title: t('Name'),
       dataIndex: 'name',
       key: 'name',
     },
     {
-      title: t('parentCategory', { defaultValue: 'Parent Category' }),
+      title: t('Parent category'),
       dataIndex: 'parentId',
       key: 'parentId',
       render: (parentId: number) => parentId || '-',
     },
     {
-      title: t('slug', { defaultValue: 'Slug' }),
+      title: t('Slug'),
       dataIndex: 'slug',
       key: 'slug',
     },
     {
-      title: t('subCategories', { defaultValue: 'Sub Categories count' }),
+      title: t('Sub categories count'),
       dataIndex: '_count',
       key: '_count.subCategories',
       render: (_: any, record: any) => record._count?.subCategories ?? '-',
     },
     {
-      title: t('actions', { defaultValue: 'Actions' }),
+      title: t('Actions'),
       key: 'actions',
       fixed: 'right',
       width: 100,
@@ -226,14 +226,12 @@ function RouteComponent() {
       <BreadcrumbComponent
         items={[
           {
-            title: t('Categories', { defaultValue: 'Categories' }),
+            title: t('Categories'),
             path: '/categories',
           },
         ]}
       />
-      <TitleHeading>
-        {t('manageCategories', { defaultValue: 'Manage Categories' })}
-      </TitleHeading>
+      <TitleHeading>{t('Manage categories')}</TitleHeading>
       <Divider />
       <Flex vertical gap={token.size}>
         <Flex justify="space-between">

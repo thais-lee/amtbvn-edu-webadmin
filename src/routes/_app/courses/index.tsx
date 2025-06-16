@@ -156,7 +156,7 @@ function RouteComponent() {
     <div>
       <Space style={{ marginBottom: 16 }}>
         <Button type="primary" onClick={handleCreate}>
-          Create Course
+          {t('Create')}
         </Button>
       </Space>
       <Table

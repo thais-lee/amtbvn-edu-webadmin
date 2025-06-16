@@ -245,6 +245,11 @@ function UsersPage() {
               title: t('Gender'),
               dataIndex: 'gender',
               key: 'gender',
+              render: (value: string) => {
+                if (value === 'MALE') return t('Male');
+                if (value === 'FEMALE') return t('Female');
+                return t('Other');
+              },
             },
             {
               title: t('Date of birth'),
@@ -278,6 +283,7 @@ function UsersPage() {
                 dayjs(value).format('DD/MM/YYYY - HH:mm:ss'),
             },
             {
+              title: t('Actions'),
               key: 'actions',
               fixed: 'right',
               width: 100,
