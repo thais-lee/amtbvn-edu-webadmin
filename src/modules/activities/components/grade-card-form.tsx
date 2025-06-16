@@ -18,7 +18,7 @@ import { TActivityAttempt, TActivityAttemptAnswer } from '../dto/activity.dto';
 import { EActivityQuestionType } from '../dto/activity.dto';
 
 const { TextArea } = Input;
-const { Text, Title } = Typography;
+const { Text } = Typography;
 
 interface GradeCardFormProps {
   gradingAttempt: TActivityAttempt;
@@ -34,7 +34,6 @@ export default function GradeCardForm({
   const [overallFeedback, setOverallFeedback] = useState(
     gradingAttempt.graderFeedback || '',
   );
-  const [saving, setSaving] = useState(false);
 
   const { data: attemptDetail } = useQuery({
     queryKey: ['attemptDetail', gradingAttempt.id],

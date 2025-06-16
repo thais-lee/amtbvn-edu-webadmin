@@ -10,7 +10,6 @@ import {
   TablePaginationConfig,
   Tag,
   Typography,
-  message,
 } from 'antd';
 import dayjs from 'dayjs';
 import { useState } from 'react';
@@ -34,12 +33,14 @@ type TTableParams = {
 };
 
 export const Route = createFileRoute('/_app/courses/')({
-  component: RouteComponent,
+  component: CoursesPage,
 });
 
-function RouteComponent() {
+function CoursesPage() {
+  const { t, antdApp } = useApp();
+  const { message } = antdApp;
+  const [search] = useState('');
   const [openDrawer, setOpenDrawer] = useState(false);
-  const { t } = useApp();
   const [editingCourse, setEditingCourse] = useState<
     Partial<TCourse> | undefined
   >(undefined);
@@ -55,7 +56,6 @@ function RouteComponent() {
       categoryId: undefined,
     },
   });
-  const [search, setSearch] = useState<string>('');
 
   useDebounce(
     () => {
@@ -97,7 +97,7 @@ function RouteComponent() {
   const createMutation = useMutation({
     mutationFn: (values: TCourseCreate) => courseService.createCourse(values),
     onSuccess: () => {
-      message.success('Created!');
+      message.success(t('Created successfully'));
       setOpenDrawer(false);
       courseQuery.refetch();
     },
@@ -279,5 +279,3 @@ function RouteComponent() {
     </div>
   );
 }
-
-export default RouteComponent;

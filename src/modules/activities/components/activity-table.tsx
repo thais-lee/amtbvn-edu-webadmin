@@ -36,7 +36,7 @@ export default function ActivityTable({ courseId }: ActivityTableProps) {
   const [formMode, setFormMode] = useState<'create' | 'update'>('create');
   const [openFormDrawer, setOpenFormDrawer] = useState(false);
   const [formId, setFormId] = useState<number>(0);
-  const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
+  const [selectedRowKeys] = useState<number[]>([]);
   const [search, setSearch] = useState('');
 
   const [gradingActivity, setGradingActivity] = useState<any>(null);

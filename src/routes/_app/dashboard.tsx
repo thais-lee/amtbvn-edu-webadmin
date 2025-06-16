@@ -62,7 +62,7 @@ function RouteComponent() {
                     font-size: ${token.fontSizeHeading5}px;
                   `}
                 >
-                  {t(stat.label)}
+                  {t(stat.label as any)}
                 </Typography.Text>
 
                 <Typography.Text

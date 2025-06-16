@@ -47,7 +47,7 @@ export const EnrollmentList: React.FC<EnrollmentListProps> = ({
   courseId,
 }: EnrollmentListProps) => {
   const { t, token, antdApp, isDarkTheme } = useApp();
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
   const [form] = Form.useForm();
   const [search, setSearch] = useState<string>('');
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
