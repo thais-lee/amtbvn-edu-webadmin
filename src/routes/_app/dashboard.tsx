@@ -4,6 +4,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { Col, Divider, Flex, Row, Skeleton, Typography } from 'antd';
 
 import useApp from '@/hooks/use-app';
+import dashboardService from '@/modules/dashboard/dashboard.service';
 import TitleHeading from '@/shared/components/title-heading';
 
 export const Route = createFileRoute('/_app/dashboard')({
@@ -14,24 +15,29 @@ function RouteComponent() {
   const { t, token } = useApp();
 
   // Mock data for dashboard
-  const mockStats = {
-    userCount: 4567,
-    courseCount: 123,
-    lessonCount: 789,
-    articleCount: 56,
-  };
 
   const dashboardQuery = useQuery({
     queryKey: ['/dashboard'],
-    queryFn: () => {},
+    queryFn: () => dashboardService.getStats(),
+    select: (data) => data.data,
   });
 
-  const colors = [token.blue, token.green, token.orange, token.red];
+  const colors = [
+    token.blue,
+    token.green,
+    token.orange,
+    token.red,
+    token.purple,
+  ];
   const statKeys = [
-    { label: 'Số lượng người dùng', value: mockStats.userCount },
-    { label: 'Số lượng khóa học', value: mockStats.courseCount },
-    { label: 'Số lượng bài học', value: mockStats.lessonCount },
-    { label: 'Số lượng bài viết', value: mockStats.articleCount },
+    { label: 'Số lượng người dùng', value: dashboardQuery.data?.userCount },
+    { label: 'Số lượng khóa học', value: dashboardQuery.data?.courseCount },
+    { label: 'Số lượng bài học', value: dashboardQuery.data?.lessonCount },
+    { label: 'Số lượng bài viết', value: dashboardQuery.data?.articleCount },
+    {
+      label: 'Số lượng tài liệu',
+      value: dashboardQuery.data?.libraryMaterialCount,
+    },
   ];
 
   return (
@@ -72,7 +78,7 @@ function RouteComponent() {
                     text-align: center;
                   `}
                 >
-                  {stat.value.toLocaleString()}
+                  {stat?.value?.toLocaleString() ?? '-'}
                 </Typography.Text>
               </Flex>
             )}
