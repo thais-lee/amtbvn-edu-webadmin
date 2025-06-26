@@ -127,7 +127,7 @@ export default function GradeCardForm({
             );
             return (
               sum +
-              (isManuallyGradedQuestion(answer?.question.type || '')
+              (isManuallyGradedQuestion(answer?.question.type as any)
                 ? score
                 : answer?.score || 0)
             );
