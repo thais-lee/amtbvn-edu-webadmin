@@ -284,5 +284,12 @@
     "Failed to delete activity": "Failed to delete activity",
     "Activity updated successfully": "Activity updated successfully",
     "Activity deleted successfully": "Activity deleted successfully",
-    "Activity created successfully": "Activity created successfully"
+    "Activity created successfully": "Activity created successfully",
+    "Course image": "Course image",
+    "Course banner": "Course banner",
+    "Enter course name": "Enter course name",
+    "Please enter course name": "Please enter course name",
+    "Edit Course": "Edit Course",
+    "Create Course": "Create Course",
+    "Banner": "Banner"
 }

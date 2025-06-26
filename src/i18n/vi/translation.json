@@ -245,5 +245,14 @@
     "Failed to delete activity": "Xóa hoạt động thất bại",
     "Activity updated successfully": "Cập nhật hoạt động thành công",
     "Activity deleted successfully": "Xóa hoạt động thành công",
-    "Activity created successfully": "Tạo hoạt động thành công"
+    "Activity created successfully": "Tạo hoạt động thành công",
+    "Course image": "Hình ảnh khóa học",
+    "Course banner": "Banner khóa học",
+    "Enter course name": "Nhập tên khóa học",
+    "Please enter course name": "Vui lòng nhập tên khóa học",
+    "Please select category": "Vui lòng chọn danh mục",
+    "Edit Course": "Sửa khóa học",
+    "Create Course": "Tạo khóa học",
+    "Select category": "Chọn danh mục",
+    "Banner": "Banner"
 }

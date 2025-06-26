@@ -14,7 +14,7 @@ class FileService {
 
   getFileUrl(fileId: number) {
     return httpService.request<string>({
-      url: `/api/files/${fileId}/url`,
+      url: `/api/files/file-url-by-id/${fileId}`,
       method: 'GET',
     });
   }
