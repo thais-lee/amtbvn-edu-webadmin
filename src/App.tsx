@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { RouterProvider, createRouter } from '@tanstack/react-router';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import { App as AntdApp, ConfigProvider, Spin } from 'antd';
 import enUS from 'antd/locale/en_US';
 import viVN from 'antd/locale/vi_VN';
@@ -43,6 +44,7 @@ const App = () => {
         <AntdApp>
           <Spin fullscreen spinning={loading} />
           <RouterProvider router={router} />
+          <SpeedInsights />
         </AntdApp>
       </ConfigProvider>
     </QueryClientProvider>
